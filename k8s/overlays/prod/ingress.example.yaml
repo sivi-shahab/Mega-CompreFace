@@ -1,0 +1,26 @@
+# CONTOH Ingress (tidak aktif). TLS wajib untuk data biometrik in-transit (SPEC NFR-11).
+# Sertifikat dari PKI internal bank; nama host & ingressClass disesuaikan.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: compreface
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 10m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - compreface.example.internal
+      secretName: compreface-tls
+  rules:
+    - host: compreface.example.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: compreface-fe
+                port:
+                  name: http

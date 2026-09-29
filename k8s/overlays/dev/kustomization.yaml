@@ -1,0 +1,36 @@
+# Overlay DEV — core varian default (FaceNet, CPU), 1 replica per service, DB terpisah dari prod.
+# Ganti "registry.example.internal" dengan host registry internal.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: compreface-dev
+
+resources:
+  - namespace.yaml
+  - ../../base
+
+images:
+  - name: mega/compreface-fe
+    newName: registry.example.internal/mega/compreface-fe
+    newTag: "1.2.0"
+  - name: mega/compreface-admin
+    newName: registry.example.internal/mega/compreface-admin
+    newTag: "1.2.0"
+  - name: mega/compreface-api
+    newName: registry.example.internal/mega/compreface-api
+    newTag: "1.2.0"
+  - name: mega/compreface-core
+    newName: registry.example.internal/mega/compreface-core
+    newTag: "1.2.0"
+  - name: mega/compreface-postgres-db
+    newName: registry.example.internal/mega/compreface-postgres-db
+    newTag: "1.2.0"
+
+configMapGenerator:
+  - name: compreface-admin
+    behavior: merge
+    literals:
+      - LOGGING_LEVEL_COM_EXADEL=DEBUG
+  - name: compreface-api
+    behavior: merge
+    literals:
+      - LOGGING_LEVEL_COM_EXADEL=DEBUG

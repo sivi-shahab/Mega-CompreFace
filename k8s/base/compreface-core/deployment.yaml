@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: compreface-core
+  labels:
+    app.kubernetes.io/name: compreface-core
+    app.kubernetes.io/component: ml-core
+spec:
+  # Stateless → boleh > 1 replica (lihat HPA contoh di overlays/prod).
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: compreface-core
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: compreface-core
+        app.kubernetes.io/component: ml-core
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 33
+        runAsGroup: 33
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: core
+          image: mega/compreface-core
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: compreface-core
+          # Startup: model di-load lazy pada request pertama. Probe ini mengirim sample image
+          # (ter-bake di image) ke /find_faces sehingga pod baru Ready setelah model termuat.
+          # Toleransi: 60 x 10 s = 600 s (SPEC NFR-03).
+          startupProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - curl -fsS -o /dev/null -m 110 -F file=@/app/ml/sample_images/000_5.jpg "http://127.0.0.1:${ML_PORT}/find_faces?limit=1"
+            periodSeconds: 10
+            timeoutSeconds: 120
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          # Liveness longgar: dengan UWSGI_THREADS=1, /healthcheck bisa antre di belakang
+          # inferensi yang panjang — jangan sampai pod sehat di-restart saat beban tinggi.
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: "1"
+              memory: 3Gi
+            limits:
+              cpu: "2"
+              memory: 6Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

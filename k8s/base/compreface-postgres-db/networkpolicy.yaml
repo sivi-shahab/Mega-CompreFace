@@ -1,0 +1,24 @@
+# DB hanya menerima koneksi dari admin & api. Tidak ada egress (selain DNS dari policy default).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: compreface-postgres-db
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: compreface-postgres-db
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: compreface-admin
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: compreface-api
+      ports:
+        - protocol: TCP
+          port: 5432
+  egress: []

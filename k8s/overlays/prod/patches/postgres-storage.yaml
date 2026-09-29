@@ -1,0 +1,29 @@
+# PVC produksi: gunakan storage class TERENKRIPSI at-rest (SPEC NFR-11).
+# Ganti "encrypted-block" dengan nama storage class di cluster bank.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: compreface-postgres-db
+spec:
+  template:
+    spec:
+      containers:
+        - name: postgres
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: compreface-postgres-db
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: encrypted-block
+        resources:
+          requests:
+            storage: 50Gi

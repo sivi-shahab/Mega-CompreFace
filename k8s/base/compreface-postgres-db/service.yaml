@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: compreface-postgres-db
+  labels:
+    app.kubernetes.io/name: compreface-postgres-db
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: compreface-postgres-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: compreface-postgres-db-headless
+  labels:
+    app.kubernetes.io/name: compreface-postgres-db
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: compreface-postgres-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres

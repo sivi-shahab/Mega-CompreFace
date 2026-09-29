@@ -1,0 +1,61 @@
+# Overlay PROD — core varian arcface-r100-gpu (kompatibel dengan embedding produksi),
+# replica ≥ 2 untuk service stateless, PDB, resource core terbesar, contoh HPA (opsional).
+# Ganti "registry.example.internal" dengan host registry internal; untuk rilis, sebaiknya
+# pin digest (newTag → digest: sha256:...) dari build/digests.txt hasil scripts/push.sh.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: compreface
+
+resources:
+  - namespace.yaml
+  - ../../base
+  - pdb.yaml
+  # HPA core — OPSIONAL. Aktifkan hanya jika metrics-server tersedia DAN jumlah GPU node
+  # mencukupi maxReplicas (tiap replica core varian GPU meminta nvidia.com/gpu: 1).
+  # - hpa-core.yaml
+  # Ingress — contoh, sesuaikan host/TLS/ingressClass sebelum diaktifkan.
+  # - ingress.example.yaml
+
+images:
+  - name: mega/compreface-fe
+    newName: registry.example.internal/mega/compreface-fe
+    newTag: "1.2.0"
+  - name: mega/compreface-admin
+    newName: registry.example.internal/mega/compreface-admin
+    newTag: "1.2.0"
+  - name: mega/compreface-api
+    newName: registry.example.internal/mega/compreface-api
+    newTag: "1.2.0"
+  - name: mega/compreface-core
+    newName: registry.example.internal/mega/compreface-core
+    newTag: "1.2.0-arcface-r100-gpu"
+  - name: mega/compreface-postgres-db
+    newName: registry.example.internal/mega/compreface-postgres-db
+    newTag: "1.2.0"
+
+replicas:
+  - name: compreface-fe
+    count: 2
+  - name: compreface-admin
+    count: 2
+  - name: compreface-api
+    count: 2
+  # core GPU: 1 replica per GPU yang tersedia (lihat patches/core-resources.yaml)
+  - name: compreface-core
+    count: 1
+
+configMapGenerator:
+  - name: compreface-core
+    behavior: merge
+    literals:
+      # 4 proses: selaras CPU limit 4 & VRAM ≈ 4 × 2,5 GB = 10 GB (GPU 24 GB)
+      - UWSGI_PROCESSES=4
+  - name: compreface-api
+    behavior: merge
+    literals:
+      - READ_TIMEOUT=60000
+
+patches:
+  - path: patches/core-resources.yaml
+  - path: patches/api-resources.yaml
+  - path: patches/postgres-storage.yaml

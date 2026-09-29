@@ -1,0 +1,33 @@
+# Resource core PROD (terbesar di antara semua service) + GPU.
+# Prasyarat: NVIDIA device plugin & node GPU. Label/taint mengikuti NVIDIA GPU Operator;
+# sesuaikan dengan label node di cluster bank.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: compreface-core
+spec:
+  # Dengan 1 GPU per replica dan tanpa GPU cadangan, maxSurge=1 akan membuat pod baru Pending.
+  # Ubah ke maxSurge: 1 / maxUnavailable: 0 bila tersedia GPU cadangan (zero-downtime).
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: core
+          resources:
+            requests:
+              cpu: "2"
+              memory: 8Gi
+              nvidia.com/gpu: 1
+            limits:
+              cpu: "4"
+              memory: 12Gi
+              nvidia.com/gpu: 1

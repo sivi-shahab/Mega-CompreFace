@@ -1,0 +1,31 @@
+# Base manifest CompreFace — 5 service, dipakai oleh overlays/dev & overlays/prod.
+# Namespace, registry/tag image, replicas & resources final ditentukan di overlay.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: compreface
+    includeSelectors: false
+
+resources:
+  - networkpolicy-default.yaml
+  - compreface-postgres-db
+  - compreface-admin
+  - compreface-api
+  - compreface-core
+  - compreface-fe
+
+# secret.example.yaml SENGAJA tidak dimasukkan: Secret dibuat di luar git (lihat docs/DEPLOYMENT.md).
+
+images:
+  - name: mega/compreface-fe
+    newTag: "1.2.0"
+  - name: mega/compreface-admin
+    newTag: "1.2.0"
+  - name: mega/compreface-api
+    newTag: "1.2.0"
+  - name: mega/compreface-core
+    newTag: "1.2.0"
+  - name: mega/compreface-postgres-db
+    newTag: "1.2.0"

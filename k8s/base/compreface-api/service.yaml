@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: compreface-api
+  labels:
+    app.kubernetes.io/name: compreface-api
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: compreface-api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

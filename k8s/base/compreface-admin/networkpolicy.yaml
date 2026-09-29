@@ -1,0 +1,44 @@
+# admin: ingress hanya dari fe (port 8080). Egress hanya ke DB (5432) dan core (3000).
+# Probe kubelet ke port management 8081 tidak diatur di sini (umumnya dikecualikan oleh CNI;
+# bila CNI Anda menerapkan policy ke traffic kubelet, tambahkan ipBlock node CIDR ke 8081).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: compreface-admin
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: compreface-admin
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: compreface-fe
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: compreface-postgres-db
+      ports:
+        - protocol: TCP
+          port: 5432
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: compreface-core
+      ports:
+        - protocol: TCP
+          port: 3000
+    # Aktifkan bila ENABLE_EMAIL_SERVER=true — ganti CIDR dengan IP relay SMTP internal:
+    # - to:
+    #     - ipBlock:
+    #         cidr: 10.0.0.25/32
+    #   ports:
+    #     - protocol: TCP
+    #       port: 587

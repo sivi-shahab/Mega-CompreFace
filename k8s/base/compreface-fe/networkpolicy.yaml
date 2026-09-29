@@ -1,0 +1,32 @@
+# fe: ingress hanya dari ingress controller (namespace diganti di overlay bila berbeda).
+# Egress hanya ke admin & api port 8080.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: compreface-fe
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: compreface-fe
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: compreface-admin
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: compreface-api
+      ports:
+        - protocol: TCP
+          port: 8080
