@@ -1,0 +1,13 @@
+*
+!LICENSE
+!NOTICE
+!embedding-calculator/requirements.txt
+!embedding-calculator/pytest.ini
+!embedding-calculator/src/
+!embedding-calculator/srcext/
+!embedding-calculator/tools/
+!embedding-calculator/sample_images/
+!services/compreface-core/uwsgi.ini
+**/tmp/
+**/__pycache__
+**/.pytest_cache

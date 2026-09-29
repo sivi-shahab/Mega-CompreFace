@@ -1,0 +1,16 @@
+CompreFace
+Copyright (c) 2020 the original author or authors (Exadel, Inc. and CompreFace contributors)
+https://github.com/exadel-inc/CompreFace
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This distribution repackages the upstream CompreFace 1.2.0 source code into independently
+built and deployed container images (namespace "mega") with Kubernetes manifests and
+configuration changes for an on-premise, air-gapped environment. The application source
+code under java/, ui/ and embedding-calculator/ is used unmodified; all original copyright
+and license headers are retained.
+
+Third-party components bundled in the container images (e.g. OpenJDK/Eclipse Temurin,
+nginx, PostgreSQL, TensorFlow, MXNet, InsightFace, FaceNet models) are distributed under
+their own licenses. Pre-trained ML models are downloaded at build time from the locations
+defined by upstream CompreFace and remain subject to their respective licenses.

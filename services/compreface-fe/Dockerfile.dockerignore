@@ -1,0 +1,8 @@
+*
+!LICENSE
+!NOTICE
+!ui/
+ui/node_modules
+ui/dist
+ui/e2e
+!services/compreface-fe/

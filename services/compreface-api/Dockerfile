@@ -1,0 +1,66 @@
+# syntax=docker/dockerfile:1.7
+#
+# compreface-api — Spring Boot (modul java/api + java/common), non-root.
+# Build context: root repo  (docker build -f services/compreface-api/Dockerfile .)
+# Ignore file  : services/compreface-api/Dockerfile.dockerignore (BuildKit)
+#
+# Build arg ND4J_CLASSIFIER: linux-x86_64 (default, paling kompatibel) |
+#   linux-x86_64-avx2 | linux-x86_64-avx512 — lihat dev/.env upstream.
+
+ARG MAVEN_IMAGE=maven:3.8.2-eclipse-temurin-17@sha256:154dd1166c8ff0050f406899465b570fd6861b7266d0bd6276427314ce10276c
+ARG JRE_IMAGE=eclipse-temurin:17.0.8_7-jre-focal@sha256:fec0b0f6cb7d2c41c0381c6828211a5adedb1ed6822d3f8209596042a9c606e7
+
+### STAGE 1: build ###
+FROM ${MAVEN_IMAGE} AS build
+ARG ND4J_CLASSIFIER=linux-x86_64
+WORKDIR /workspace/compreface
+COPY java/pom.xml ./
+COPY java/common/pom.xml common/
+COPY java/admin/pom.xml admin/
+COPY java/api/pom.xml api/
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -B -q -pl api -am dependency:go-offline -Dnd4j.classifier=${ND4J_CLASSIFIER} -Dmaven.gitcommitid.skip || true
+COPY java/common common
+COPY java/api api
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -B -pl api -am package \
+      -Dmaven.test.skip=true -Dmaven.site.skip=true -Dmaven.javadoc.skip=true \
+      -Dcheckstyle.skip -Djacoco.skip -Dmaven.gitcommitid.skip \
+      -Dnd4j.classifier=${ND4J_CLASSIFIER} \
+ && cp api/target/frs-core-app-*.jar /workspace/app.jar
+
+### STAGE 2: runtime ###
+FROM ${JRE_IMAGE}
+ARG VERSION=dev
+ARG REVISION=unknown
+ARG ND4J_CLASSIFIER=linux-x86_64
+LABEL org.opencontainers.image.title="compreface-api" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.source="https://github.com/exadel-inc/CompreFace" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.vendor="mega (repackaged from Exadel CompreFace)" \
+      id.co.bankmega.compreface.nd4j-classifier="${ND4J_CLASSIFIER}"
+
+RUN groupadd --system --gid 1001 app \
+ && useradd --system --uid 1001 --gid app --home-dir /app --shell /usr/sbin/nologin app \
+ && apt-get update && apt-get install -y --no-install-recommends curl \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY --from=build --chown=0:0 /workspace/app.jar /app/app.jar
+COPY LICENSE NOTICE /usr/share/licenses/compreface/
+
+# Default non-rahasia (override via env / ConfigMap). Credential WAJIB dari env/Secret.
+# Management port terpisah (8081): /actuator di port 8080 diblokir filter x-api-key.
+ENV API_JAVA_OPTS="-XX:MaxRAMPercentage=75.0" \
+    SPRING_PROFILES_ACTIVE=dev \
+    MANAGEMENT_SERVER_PORT=8081 \
+    MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED=true \
+    PYTHON_URL=http://compreface-core:3000 \
+    SAVE_IMAGES_TO_DB=true
+
+USER 1001
+EXPOSE 8080 8081
+HEALTHCHECK --interval=15s --timeout=5s --start-period=120s --retries=5 \
+  CMD curl -fsS http://127.0.0.1:${MANAGEMENT_SERVER_PORT}/actuator/health/liveness || exit 1
+ENTRYPOINT ["sh", "-c", "exec java $API_JAVA_OPTS -jar /app/app.jar"]

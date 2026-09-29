@@ -14,3 +14,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Build output & local env (lihat .env.example) ###
+/build/
+.env

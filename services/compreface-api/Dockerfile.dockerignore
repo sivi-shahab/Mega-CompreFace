@@ -1,0 +1,8 @@
+*
+!LICENSE
+!NOTICE
+!java/pom.xml
+!java/common/
+!java/api/
+!java/admin/pom.xml
+**/target
