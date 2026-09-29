@@ -1,0 +1,4 @@
+# TC kompatibilitas embedding (R-01)
+baru  : insightface.Calculator@arcface-r100-msfdrop75 (mega/compreface-core:1.2.0-arcface-r100-gpu, GPU)
+resmi : insightface.Calculator@arcface-r100-msfdrop75 (exadel/compreface-core:1.2.0-arcface-r100, CPU)
+dimensi: 512 512  cosine similarity = 0.999992

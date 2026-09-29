@@ -1,0 +1,24 @@
+# Pemeriksaan statis image 2026-09-29T15:31:52+07:00
+IMAGE                                         uid      appery     secret_hist    version  revision
+mega/compreface-postgres-db:1.2.0             0        0          0              1.2.0    ddf32da8245e2e668
+mega/compreface-admin:1.2.0                   1001     0          0              1.2.0    ddf32da8245e2e668
+mega/compreface-api:1.2.0                     1001     0          0              1.2.0    ddf32da8245e2e668
+mega/compreface-core:1.2.0                    33       0          0              1.2.0    ddf32da8245e2e668
+mega/compreface-core:1.2.0-arcface-r100-gpu   33       0          0              1.2.0-arcface-r100-gpu ddf32da8245e2e668
+mega/compreface-fe:1.2.0                      101      0          0              1.2.0    ddf32da8245e2e668
+
+## tag latest pada image mega/*:
+0
+## build.sh menolak latest:
+ERROR: tag 'latest' dilarang — gunakan versi SemVer (mis. 1.2.0)
+## label model core:
+image:exadel/compreface-core:1.2.0@sha256:c9c70f0f270b1767bdf59d8e549f00f7d8f06e29315ac2ff624e276dcf37385b
+image:exadel/compreface-core:1.2.0-arcface-r100@sha256:bc8b3831580ab3a21a0467bf0f8bf21113e1047fb24a7bb008a1fc69cca633db
+## referensi APPERY di manifest/compose:
+0
+## file .env / secret asli di git index:
+6
+## LICENSE identik upstream:
+identik
+## source aplikasi tidak berubah (java/ ui/ embedding-calculator/):
+0

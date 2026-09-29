@@ -1,0 +1,51 @@
+
+=== TC-E2E-01 UI terbuka
+PASS: GET / = 200 (Angular SPA)
+
+=== TC-E2E-02 Register & login admin
+PASS: register owner.e2e@example.internal (201)
+PASS: login → access_token (cookie) diterima
+
+=== TC-E2E-03 Buat aplikasi & face collection
+PASS: aplikasi dibuat id=b0ec7459-af96-451e-873f-62cbd35af942
+PASS: face collection dibuat (api key diterima)
+
+=== TC-E2E-04 Upload wajah via API
+{
+  "image_id" : "72dd4683-a3b2-46bc-91a1-90ec7d1275a5",
+  "subject" : "person_b"
+}
+PASS: wajah person_b tersimpan
+
+=== TC-E2E-05 Recognition (orang sama, foto berbeda)
+{
+    "result": [
+        {
+            "box": {
+                "probability": 0.9951,
+                "x_max": 243,
+                "y_max": 281,
+                "x_min": 194,
+                "y_min": 219
+            },
+            "subjects": [
+                {
+                    "subject": "person_b",
+                    "similarity": 0.99985
+                }
+            ]
+        }
+    ]
+}
+PASS: person_b dikenali, similarity=0.99985 (≥ 0.8)
+
+=== TC-E2E-06 Recognition orang berbeda (negatif)
+PASS: orang berbeda similarity=0.08363 (< 0.99985)
+
+=== TC-E2E-07 Plugin & versi core (dilaporkan api)
+{'age': 'insightface.AgeDetector', 'gender': 'insightface.GenderDetector', 'detector': 'insightface.FaceDetector@retinaface_r50_v1', 'calculator': 'insightface.Calculator@arcface-r100-msfdrop75'}
+
+=== NFR-04 Latensi recognition (20 request setelah warm-up, 1 wajah)
+n=20 min=0.073s median=0.087s p95=0.101s max=0.274s
+
+RINGKASAN: 8 PASS, 0 FAIL

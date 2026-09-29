@@ -1,0 +1,14 @@
+# TC air-gapped core GPU mega/compreface-core:1.2.0-arcface-r100-gpu 2026-09-29T15:17:27+07:00
+healthy setelah 21 s
+NetworkMode=none ReadOnly=true User=33:33 Health=healthy
+find_faces #1 http=200 t=1.351273s
+find_faces #2 http=200 t=1.110711s
+find_faces #3 http=200 t=1.124599s
+sejak start hingga inferensi pertama sukses: 25 s
+plugins {'age': 'insightface.AgeDetector', 'calculator': 'insightface.Calculator@arcface-r100-msfdrop75', 'detector': 'insightface.FaceDetector@retinaface_r50_v1', 'gender': 'insightface.GenderDetector', 'landmarks': 'insightface.LandmarksDetector', 'mask': 'facemask.MaskDetector', 'pose': 'insightface.PoseEstimator'}
+embedding_len 512 age {'high': 23, 'low': 23, 'probability': 1.0} gender {'probability': 1.0, 'value': 'female'} mask {'probability': 0.9999961853027344, 'value': 'without_mask'}
+{"available_plugins":{"age":"insightface.AgeDetector","calculator":"insightface.Calculator@arcface-r100-msfdrop75","detector":"insightface.FaceDetector@retinaface_r50_v1","gender":"insightface.GenderDetector","landmarks":"insightface.LandmarksDetector","mask":"facemask.MaskDetector","pose":"insightface.PoseEstimator"},"build_version":"1.2.0","calculator_version":"insightface.Calculator@arcface-r100-msfdrop75","similarity_coefficients":[1.224676,6.322647217],"status":"OK"}
+
+egress exit code: 6 (non-zero = diblokir)
+733997, 2561 MiB
+733998, 2555 MiB

@@ -1,0 +1,8 @@
+# NFR-05 UWSGI_PROCESSES 2026-09-29T15:19:11+07:00
+UWSGI_PROCESSES=2 (default):
+2
+ Container cfverify-compreface-core-1  Healthy
+UWSGI_PROCESSES=3:
+spawned uWSGI worker 1 (pid: 42, cores: 1)
+spawned uWSGI worker 2 (pid: 43, cores: 1)
+spawned uWSGI worker 3 (pid: 44, cores: 1)

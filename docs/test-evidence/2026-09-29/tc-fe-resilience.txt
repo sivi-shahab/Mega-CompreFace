@@ -1,0 +1,8 @@
+# TC resiliensi fe 2026-09-29T15:01:31+07:00
+api IP sebelum: 172.19.0.6
+ Container cfverify-compreface-admin-1  Stopped
+saat admin/api mati: /=200 /healthz=200 /api/v1/…=502 /admin/…=502
+ Container cfverify-compreface-api-1  Healthy
+api IP sesudah: 172.19.0.7
+setelah pulih: /admin/user/me=200 /api/v1/consistence/status=200
+fe restarts=0 status=running health=healthy started=2026-09-29T07:59:42.812224498Z

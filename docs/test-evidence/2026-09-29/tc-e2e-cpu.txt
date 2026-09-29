@@ -1,0 +1,51 @@
+
+=== TC-E2E-01 UI terbuka
+PASS: GET / = 200 (Angular SPA)
+
+=== TC-E2E-02 Register & login admin
+PASS: register owner.e2e@example.internal (201)
+PASS: login → access_token (cookie) diterima
+
+=== TC-E2E-03 Buat aplikasi & face collection
+PASS: aplikasi dibuat id=be51698c-606a-41db-b635-ab6391348cf4
+PASS: face collection dibuat (api key diterima)
+
+=== TC-E2E-04 Upload wajah via API
+{
+  "image_id" : "e5fca1d0-7a99-4132-b6f5-bd896b73cb5e",
+  "subject" : "person_b"
+}
+PASS: wajah person_b tersimpan
+
+=== TC-E2E-05 Recognition (orang sama, foto berbeda)
+{
+    "result": [
+        {
+            "box": {
+                "probability": 0.99993,
+                "x_max": 253,
+                "y_max": 288,
+                "x_min": 183,
+                "y_min": 212
+            },
+            "subjects": [
+                {
+                    "subject": "person_b",
+                    "similarity": 0.99485
+                }
+            ]
+        }
+    ]
+}
+PASS: person_b dikenali, similarity=0.99485 (≥ 0.8)
+
+=== TC-E2E-06 Recognition orang berbeda (negatif)
+PASS: orang berbeda similarity=0.0329 (< 0.99485)
+
+=== TC-E2E-07 Plugin & versi core (dilaporkan api)
+{'age': 'agegender.AgeDetector', 'gender': 'agegender.GenderDetector', 'detector': 'facenet.FaceDetector', 'calculator': 'facenet.Calculator'}
+
+=== NFR-04 Latensi recognition (20 request setelah warm-up, 1 wajah)
+n=20 min=0.267s median=0.302s p95=0.351s max=0.380s
+
+RINGKASAN: 8 PASS, 0 FAIL

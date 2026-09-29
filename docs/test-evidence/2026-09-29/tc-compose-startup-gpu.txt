@@ -1,0 +1,7 @@
+stack GPU healthy in 38s
+NAME                                IMAGE                                         STATUS
+cfverify-compreface-admin-1         mega/compreface-admin:1.2.0                   Up 31 seconds (healthy)
+cfverify-compreface-api-1           mega/compreface-api:1.2.0                     Up 15 seconds (healthy)
+cfverify-compreface-core-1          mega/compreface-core:1.2.0-arcface-r100-gpu   Up 37 seconds (healthy)
+cfverify-compreface-fe-1            mega/compreface-fe:1.2.0                      Up 37 seconds (healthy)
+cfverify-compreface-postgres-db-1   mega/compreface-postgres-db:1.2.0             Up 37 seconds (healthy)

@@ -1,0 +1,11 @@
+# Review manifest overlay prod (kubectl kustomize) 2026-09-29
+FR-12 api PYTHON_URL = http://compreface-core:3000 | Service compreface-core type = ClusterIP ports = [(3000, 'http')]
+NFR-01 replicas: {'compreface-admin': 2, 'compreface-api': 2, 'compreface-core': 1, 'compreface-fe': 2, 'compreface-postgres-db': 1}
+NFR-01 strategy: {'compreface-admin': {'maxSurge': 1, 'maxUnavailable': 0}, 'compreface-api': {'maxSurge': 1, 'maxUnavailable': 0}, 'compreface-core': {'maxSurge': 0, 'maxUnavailable': 1}, 'compreface-fe': {'maxSurge': 1, 'maxUnavailable': 0}}
+NFR-01 PDB: {'compreface-admin': {'minAvailable': 1}, 'compreface-api': {'minAvailable': 1}, 'compreface-core': {'maxUnavailable': 1}, 'compreface-fe': {'minAvailable': 1}}
+NFR-10 log level prod: {'compreface-admin-592mhtbhgd': {'LOGGING_LEVEL_COM_EXADEL': 'INFO'}, 'compreface-api-4d26dgch77': {'LOGGING_LEVEL_COM_EXADEL': 'INFO'}, 'compreface-core-dd268t958b': {'LOGGING_LEVEL_NAME': 'info'}, 'compreface-fe-gh5hcm9tkh': {}, 'compreface-postgres-db-5b87dmhh57': {}} | DEBUG ada di prod: False
+FR-11 resource limits: {'compreface-admin': {'cpu': '1', 'memory': '1536Mi'}, 'compreface-api': {'cpu': '2', 'memory': '6Gi'}, 'compreface-core': {'cpu': '4', 'memory': '12Gi', 'nvidia.com/gpu': 1}, 'compreface-fe': {'cpu': '500m', 'memory': '256Mi'}, 'compreface-postgres-db': {'cpu': '2', 'memory': '4Gi'}}
+FR-11 core image: registry.example.internal/mega/compreface-core:1.2.0-arcface-r100-gpu | UWSGI_PROCESSES = 4
+NFR-07 NetworkPolicy: ['allow-dns-egress', 'compreface-admin', 'compreface-api', 'compreface-core', 'compreface-fe', 'compreface-postgres-db', 'default-deny-all']
+NFR-07 core egress = [] | postgres egress = []
+PSA namespace label: {'data-classification': 'pdp-biometric', 'pod-security.kubernetes.io/audit': 'restricted', 'pod-security.kubernetes.io/enforce': 'restricted', 'pod-security.kubernetes.io/warn': 'restricted'}

@@ -1,0 +1,8 @@
+# TC postgres ala k8s securityContext 2026-09-29T15:03:28+07:00
+status=running health=healthy user=999:999 ro=true
+uid=999(postgres) gid=999(postgres) groups=999(postgres)
+127.0.0.1:5432 - accepting connections
+uuid-ossp
+drwx------ 19 postgres postgres 4096 Sep 29 08:03 /var/lib/postgresql/data/pgdata
+2026-09-29 08:03:23.480 UTC [31] LOG:  database system is ready to accept connections
+2026-09-29 08:03:24.226 UTC [1] LOG:  database system is ready to accept connections

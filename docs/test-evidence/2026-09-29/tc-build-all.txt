@@ -1,0 +1,19 @@
+==> selesai mega/compreface-postgres-db:1.2.0 (4 s)
+==> selesai mega/compreface-admin:1.2.0 (4 s)
+==> selesai mega/compreface-api:1.2.0 (1 s)
+==> selesai mega/compreface-core:1.2.0 (268 s)
+==> selesai mega/compreface-core:1.2.0-arcface-r100-gpu (12 s)
+==> selesai mega/compreface-fe:1.2.0 (276 s)
+  mega/compreface-postgres-db:1.2.0                                      111 MB
+  mega/compreface-admin:1.2.0                                            159 MB
+  mega/compreface-api:1.2.0                                              239 MB
+  mega/compreface-core:1.2.0                                             1467 MB
+  mega/compreface-core:1.2.0-arcface-r100-gpu                            3876 MB
+  mega/compreface-fe:1.2.0                                               55 MB
+REPOSITORY:TAG                                         IMAGE ID       SIZE
+mega/compreface-fe:1.2.0                               1b54639db971   203MB
+mega/compreface-core:1.2.0                             734c4595f150   4.72GB
+mega/compreface-core:1.2.0-arcface-r100-gpu            66f76f234ac7   11.4GB
+mega/compreface-api:1.2.0                              1f7821c077af   686MB
+mega/compreface-admin:1.2.0                            ee7cd0b030f7   520MB
+mega/compreface-postgres-db:1.2.0                      e969efd3aea4   428MB

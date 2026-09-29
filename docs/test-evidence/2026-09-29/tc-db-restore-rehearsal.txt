@@ -1,0 +1,17 @@
+# Gladi backup/restore (data sintetis stack verifikasi) 2026-09-29T15:48:21+07:00
+## counts sumber
+embedding:Facenet2018|20
+embedding:facenet.Calculator|1
+table:app|2
+table:databasechangelog|45
+table:embedding|21
+table:img|1
+table:install_info|1
+table:model|4
+table:model_statistic|0
+table:subject|21
+table:user|1
+table:user_app_role|2
+## diff sumber vs target
+VALIDASI JUMLAH RECORD: SAMA
+start #2 (setelah restore) changeset ran: 0; health=healthy

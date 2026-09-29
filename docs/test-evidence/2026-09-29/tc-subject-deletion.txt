@@ -1,0 +1,25 @@
+# TC penghapusan data subject (hak hapus UU PDP) 2026-09-29T15:53:19+07:00
+awal: subject=0 embedding=0 img_total=0 img_orphan=0
+setelah tambah 2 subject x 2 foto: subject=2 embedding=4 img_total=4 img_orphan=0
+A) DELETE /api/v1/recognition/faces?subject=subj_a -> {"deleted":2}
+   sesudah: subject=1 embedding=2 img_total=4 img_orphan=2
+B) DELETE /api/v1/recognition/subjects/subj_b -> {"subject":"subj_b"}
+   sesudah: subject=0 embedding=0 img_total=4 img_orphan=4
+A2) DELETE /api/v1/recognition/subjects/subj_a (subject tanpa example) -> {"message":"Subjectsubj_anotfound","code":42}
+   sesudah: subject=0 embedding=0 img_total=4 img_orphan=4
+
+## Mitigasi: scripts/db-purge-orphan-images.sql
+BEGIN
+ orphan_img_sebelum 
+--------------------
+                  4
+(1 row)
+
+DELETE 4
+ orphan_img_sesudah 
+--------------------
+                  0
+(1 row)
+
+COMMIT
+img_total sesudah purge: 0

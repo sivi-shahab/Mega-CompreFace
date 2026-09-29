@@ -1,0 +1,38 @@
+## kubectl kustomize k8s/overlays/dev (2026-09-29T15:02:57+07:00)
+exit=0
+      5 kind: ConfigMap
+      4 kind: Deployment
+      1 kind: Namespace
+      7 kind: NetworkPolicy
+      6 kind: Service
+      1 kind: StatefulSet
+Summary: 24 resources found in 1 file - Valid: 24, Invalid: 0, Errors: 0, Skipped: 0
+## kubectl kustomize k8s/overlays/prod (2026-09-29T15:02:58+07:00)
+exit=0
+      5 kind: ConfigMap
+      4 kind: Deployment
+      1 kind: Namespace
+      7 kind: NetworkPolicy
+      4 kind: PodDisruptionBudget
+      6 kind: Service
+      1 kind: StatefulSet
+Summary: 28 resources found in 1 file - Valid: 28, Invalid: 0, Errors: 0, Skipped: 0
+## kubeconform manifest opsional
+Summary: 4 resources found in 3 files - Valid: 4, Invalid: 0, Errors: 0, Skipped: 0
+## kubectl --dry-run=client (validasi skema tanpa cluster)
+unable to recognize "<scratchpad>/render-prod.yaml": Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+unable to recognize "<scratchpad>/render-prod.yaml": Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+unable to recognize "<scratchpad>/render-prod.yaml": Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+unable to recognize "<scratchpad>/render-prod.yaml": Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+## dev probe & securityContext check
+compreface-admin         readiness=True liveness=True startup_budget=300s runAsNonRoot=True uid=1001 roFS=True image=registry.example.internal/mega/compreface-admin:1.2.0
+compreface-api           readiness=True liveness=True startup_budget=300s runAsNonRoot=True uid=1001 roFS=True image=registry.example.internal/mega/compreface-api:1.2.0
+compreface-core          readiness=True liveness=True startup_budget=600s runAsNonRoot=True uid=33 roFS=True image=registry.example.internal/mega/compreface-core:1.2.0
+compreface-fe            readiness=True liveness=True startup_budget=Nones runAsNonRoot=True uid=101 roFS=True image=registry.example.internal/mega/compreface-fe:1.2.0
+compreface-postgres-db   readiness=True liveness=True startup_budget=Nones runAsNonRoot=True uid=999 roFS=True image=registry.example.internal/mega/compreface-postgres-db:1.2.0
+## prod probe & securityContext check
+compreface-admin         readiness=True liveness=True startup_budget=300s runAsNonRoot=True uid=1001 roFS=True image=registry.example.internal/mega/compreface-admin:1.2.0
+compreface-api           readiness=True liveness=True startup_budget=300s runAsNonRoot=True uid=1001 roFS=True image=registry.example.internal/mega/compreface-api:1.2.0
+compreface-core          readiness=True liveness=True startup_budget=600s runAsNonRoot=True uid=33 roFS=True image=registry.example.internal/mega/compreface-core:1.2.0-arcface-r100-gpu
+compreface-fe            readiness=True liveness=True startup_budget=Nones runAsNonRoot=True uid=101 roFS=True image=registry.example.internal/mega/compreface-fe:1.2.0
+compreface-postgres-db   readiness=True liveness=True startup_budget=Nones runAsNonRoot=True uid=999 roFS=True image=registry.example.internal/mega/compreface-postgres-db:1.2.0

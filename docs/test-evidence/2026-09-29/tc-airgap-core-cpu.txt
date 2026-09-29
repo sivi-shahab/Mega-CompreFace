@@ -1,0 +1,12 @@
+# TC air-gapped core CPU (image final) 2026-09-29T15:30:16+07:00
+healthy setelah 47 s
+NetworkMode=none ReadOnly=true User=33:33
+find_faces http=200 t=0.329641s
+inferensi pertama sukses: 48 s sejak start
+{'age': 'agegender.AgeDetector', 'calculator': 'facenet.Calculator', 'detector': 'facenet.FaceDetector', 'gender': 'agegender.GenderDetector', 'mask': 'facemask.MaskDetector'}
+embedding_len 512
+egress exit code: 6
+12
+84d33f000934f64cb3e46ac3c3f342f5a875c3554a4bf59af268fd4559246bcd  ./agegender/age/22801/checkpoint
+03be21fd51d1c75ce3a52f4416b6f3ba04baef1d4ae917748496d1180ea6cf06  ./agegender/age/22801/checkpoint-14999.data-00000-of-00001
+e678d2b0225e9d56ca3957f63730902da8760e09a018ebaef9117ec623f2fa21  ./agegender/age/22801/checkpoint-14999.index

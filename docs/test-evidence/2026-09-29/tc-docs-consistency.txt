@@ -1,0 +1,7 @@
+# TC-20 Konsistensi dokumentasi — scripts/check-docs.sh (2026-09-29T16:54:40+07:00)
+[1] Requirement di SPEC: 32  |  baris traceability: 32  |  TC terdefinisi: 36
+[2] Env var unik di manifest/compose/.env.example: 55  |  tidak terdokumentasi: 0
+[3] File markdown diperiksa: 41  |  link relatif: 289
+[4] Dokumen SDLC diperiksa metadata: 22
+
+LULUS: semua pemeriksaan konsistensi dokumentasi

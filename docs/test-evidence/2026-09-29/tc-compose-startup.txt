@@ -1,0 +1,7 @@
+stack CPU healthy in 62s
+NAME                                IMAGE                               STATUS                        PORTS
+cfverify-compreface-admin-1         mega/compreface-admin:1.2.0         Up 56 seconds (healthy)       8080-8081/tcp
+cfverify-compreface-api-1           mega/compreface-api:1.2.0           Up 15 seconds (healthy)       8080-8081/tcp
+cfverify-compreface-core-1          mega/compreface-core:1.2.0          Up About a minute (healthy)   3000/tcp
+cfverify-compreface-fe-1            mega/compreface-fe:1.2.0            Up About a minute (healthy)   0.0.0.0:18000->8080/tcp, [::]:18000->8080/tcp
+cfverify-compreface-postgres-db-1   mega/compreface-postgres-db:1.2.0   Up About a minute (healthy)   5432/tcp

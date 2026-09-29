@@ -1,0 +1,22 @@
+# Bukti tambahan 2026-09-29T15:01:12+07:00
+## api → core (consistence status)
+{
+  "demoFaceCollectionIsInconsistent" : false,
+  "dbIsInconsistent" : false,
+  "saveImagesToDB" : true,
+  "status" : "OK"
+}
+## embedding.calculator di DB verifikasi
+Facenet2018|20
+## uid tiap container & restart count
+cfverify-compreface-fe-1             uid=101 restarts=0 read_only=true
+cfverify-compreface-admin-1          uid=1001 restarts=0 read_only=true
+cfverify-compreface-api-1            uid=1001 restarts=0 read_only=true
+cfverify-compreface-core-1           uid=33 restarts=0 read_only=true
+cfverify-compreface-postgres-db-1    uid=0 restarts=0 read_only=false
+## /core/ via fe (harus bukan respons core)
+<!--
+  ~ Copyright (c) 2020 the original author or authors
+ 
+## admin health (mail indicator off)
+{"status":"UP","groups":["liveness","readiness"]}
