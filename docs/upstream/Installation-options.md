@@ -16,7 +16,7 @@ Each of them has its benefits and disadvantages.
 ## Docker Compose
 
 Docker-compose configuration allows simply run, configure, stop and restart CompreFace.
-To install CompreFace using docker-compose just follow instructions in [getting started](../README.md#getting-started-with-compreface)
+To install CompreFace using docker-compose just follow instructions in [getting started](README-upstream.md#getting-started-with-compreface)
 
 ### Maintaining tips
 

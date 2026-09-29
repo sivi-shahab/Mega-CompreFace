@@ -15,7 +15,7 @@ to report any bugs related to these builds.
 
 ## List of custom-builds
 
-You can find the list of custom builds [here](../custom-builds/README.md)
+You can find the list of custom builds [here](../../custom-builds/README.md)
 
 ## Contribution
 

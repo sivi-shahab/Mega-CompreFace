@@ -1,7 +1,7 @@
 # How to Use CompreFace
 
 **Step 1.** Install and run CompreFace using our [Getting Started
-guide](../README.md#getting-started-with-compreface)
+guide](README-upstream.md#getting-started-with-compreface)
 
 **Step 2.** You need to sign up for the system and login into the
 account you've just created or use the one you already have. After

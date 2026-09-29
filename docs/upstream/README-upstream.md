@@ -1,3 +1,5 @@
+> **Catatan (mega):** dokumen ini adalah README asli upstream [exadel-inc/CompreFace](https://github.com/exadel-inc/CompreFace) v1.2.0, dipindahkan dari root repo tanpa perubahan isi selain penyesuaian link relatif. README proyek ini: [../../README.md](../../README.md).
+
 
 <h1 align="center">Exadel CompreFace is a leading free and open-source face recognition system</h1>
 
@@ -48,21 +50,21 @@
   * [Functionalities](#functionalities)
   * [Getting Started with CompreFace](#getting-started-with-compreface)
   * [CompreFace SDKs](#compreface-sdks)
-  * [Documentation](/docs)
-    * [How to Use CompreFace](/docs/How-to-Use-CompreFace.md)
-    * [Face Services and Plugins](/docs/Face-services-and-plugins.md)
-    * [Rest API Description](/docs/Rest-API-description.md)
+  * [Documentation](README.md)
+    * [How to Use CompreFace](How-to-Use-CompreFace.md)
+    * [Face Services and Plugins](Face-services-and-plugins.md)
+    * [Rest API Description](Rest-API-description.md)
     * [Postman documentation and collection](https://documenter.getpostman.com/view/17578263/UUxzAnde)
-    * [Face Recognition Similarity Threshold](/docs/Face-Recognition-Similarity-Threshold.md)
-    * [Configuration](/docs/Configuration.md)
-    * [Architecture and Scalability](/docs/Architecture-and-scalability.md)
-    * [Custom Builds](/docs/Custom-builds.md)
-    * [Face data migration](/docs/Face-data-migration.md)
-    * [User Roles System](/docs/User-Roles-System.md)
-    * [Face Mask Detection Plugin](/docs/Mask-detection-plugin.md)
+    * [Face Recognition Similarity Threshold](Face-Recognition-Similarity-Threshold.md)
+    * [Configuration](Configuration.md)
+    * [Architecture and Scalability](Architecture-and-scalability.md)
+    * [Custom Builds](Custom-builds.md)
+    * [Face data migration](Face-data-migration.md)
+    * [User Roles System](User-Roles-System.md)
+    * [Face Mask Detection Plugin](Mask-detection-plugin.md)
     * [Kubernetes configuration](https://github.com/exadel-inc/compreface-kubernetes)
-    * [Gathering Anonymous Statistics](/docs/Gathering-anonymous-statistics.md)
-    * [Installation Options](/docs/Installation-options.md)
+    * [Gathering Anonymous Statistics](Gathering-anonymous-statistics.md)
+    * [Installation Options](Installation-options.md)
   * [Contributing](#contributing)
   * [License info](#license-info)
 
@@ -153,14 +155,14 @@ The system can accurately identify people even when it has only “seen” their
 # Functionalities
 
 - Supports many face recognition services:
-  - [face detection](/docs/Face-services-and-plugins.md#face-detection)
-  - [face recognition](/docs/Face-services-and-plugins.md#face-recognition)
-  - [face verification](/docs/Face-services-and-plugins.md#face-verification)
-  - [landmark detection plugin](/docs/Face-services-and-plugins.md#face-plugins)
-  - [age recognition plugin](/docs/Face-services-and-plugins.md#face-plugins)
-  - [gender recognition plugin](/docs/Face-services-and-plugins.md#face-plugins)
-  - [face mask detection plugin](/docs/Face-services-and-plugins.md#face-plugins)
-  - [head pose plugin](/docs/Face-services-and-plugins.md#face-plugins)
+  - [face detection](Face-services-and-plugins.md#face-detection)
+  - [face recognition](Face-services-and-plugins.md#face-recognition)
+  - [face verification](Face-services-and-plugins.md#face-verification)
+  - [landmark detection plugin](Face-services-and-plugins.md#face-plugins)
+  - [age recognition plugin](Face-services-and-plugins.md#face-plugins)
+  - [gender recognition plugin](Face-services-and-plugins.md#face-plugins)
+  - [face mask detection plugin](Face-services-and-plugins.md#face-plugins)
+  - [head pose plugin](Face-services-and-plugins.md#face-plugins)
 - Use the CompreFace UI panel for convenient user roles and access management
 
 # Getting Started with CompreFace
@@ -192,7 +194,7 @@ The system can accurately identify people even when it has only “seen” their
 
 ### Getting started for contributors
 
-Follow this [link](/dev)
+Follow this [link](../../dev)
 
 # CompreFace SDKs
 
@@ -204,7 +206,7 @@ Follow this [link](/dev)
 
 # Documentation
 
-More documentation is available [here](/docs)
+More documentation is available [here](README.md)
 
 # Contributing
 
@@ -214,11 +216,11 @@ We want to improve our open-source face recognition solution, so your contributi
 * Share knowledge and experience via posting guides and articles, or just improve our [documentation](https://github.com/exadel-inc/CompreFace/tree/master/docs)
 * Create [SDKs](https://github.com/topics/compreface-sdk) for favorite programming language, we will add it to our documentation
 * Integrate CompreFace support to other platforms like [Home Assistant](https://www.home-assistant.io/) or [DreamFactory](https://www.dreamfactory.com/), we will add it to our documentation
-* [Contribute](CONTRIBUTING.md) code
-* Add [plugin](/docs/Face-services-and-plugins.md#face-plugins) to face services
+* [Contribute](CONTRIBUTING-upstream.md) code
+* Add [plugin](Face-services-and-plugins.md#face-plugins) to face services
 * And last, but not least, you can just give a star to our free facial recognition system on GitHub
 
-For more information, visit our [contributing](CONTRIBUTING.md) guide, or create a [discussion](https://github.com/exadel-inc/CompreFace/discussions).
+For more information, visit our [contributing](CONTRIBUTING-upstream.md) guide, or create a [discussion](https://github.com/exadel-inc/CompreFace/discussions).
 
 # License info 
 

@@ -16,7 +16,7 @@ embeddings calculated by the same neural network model.
 CompreFace doesn't change the neural network model during its work, so
 you usually don't need to migrate your face data. If you want to try
 [custom build](Custom-builds.md), be very careful - look at the table
-[here](../custom-builds/README.md), column `Face recognition model` - if
+[here](../../custom-builds/README.md), column `Face recognition model` - if
 the model changed, you need to run a migration.
 
 ## Limitations
