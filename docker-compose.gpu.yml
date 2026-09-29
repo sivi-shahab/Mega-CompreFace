@@ -1,0 +1,14 @@
+# Override varian core GPU (setara overlays/prod): image 1.2.0-arcface-r100-gpu + 1 GPU NVIDIA.
+# Prasyarat host: driver NVIDIA + nvidia-container-toolkit.
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+services:
+  compreface-core:
+    image: ${REGISTRY:-}mega/compreface-core:${CORE_GPU_VERSION:-1.2.0-arcface-r100-gpu}
+    mem_limit: ${CORE_GPU_MEM_LIMIT:-12g}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

@@ -1,85 +1,136 @@
-version: '3.4'
+# CompreFace — docker compose dengan image mega/* (build unit terpisah, lihat services/*).
+#
+#   cp .env.example .env   # isi POSTGRES_PASSWORD & SECURITY_SIGNINGKEY
+#   docker compose up -d
+#   # varian core GPU (arcface-r100-gpu):
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+#
+# Konfigurasi setara k8s/base (nama env var sama dengan ConfigMap/Secret). Referensi lengkap:
+# docs/CONFIGURATION.md. Tidak memakai container_name agar beberapa project (mis. verifikasi)
+# bisa berjalan berdampingan — nama container = <project>-<service>-<n>.
+
+name: ${COMPOSE_PROJECT_NAME:-compreface}
+
+x-java-common: &java-common
+  TZ: ${TZ:-Asia/Jakarta}
+  JAVA_TOOL_OPTIONS: -Duser.timezone=${TZ:-Asia/Jakarta}
+  SPRING_PROFILES_ACTIVE: dev
+  POSTGRES_URL: jdbc:postgresql://compreface-postgres-db:5432/${POSTGRES_DB:-frs}
+  POSTGRES_USER: ${POSTGRES_USER:-compreface}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?isi POSTGRES_PASSWORD di .env}
+  PYTHON_URL: http://compreface-core:3000
+  SAVE_IMAGES_TO_DB: ${SAVE_IMAGES_TO_DB:-true}
+  MAX_FILE_SIZE: ${MAX_FILE_SIZE:-5MB}
+  MAX_REQUEST_SIZE: ${MAX_REQUEST_SIZE:-10MB}
+  MANAGEMENT_SERVER_PORT: 8081
+  MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
+  LOGGING_LEVEL_COM_EXADEL: ${LOGGING_LEVEL_COM_EXADEL:-INFO}
 
 volumes:
   postgres-data:
 
 services:
   compreface-postgres-db:
-    image: ${registry}compreface-postgres-db:${POSTGRES_VERSION}
-    restart: always
-    container_name: "compreface-postgres-db"
+    image: ${REGISTRY:-}mega/compreface-postgres-db:${POSTGRES_VERSION:-1.2.0}
+    restart: unless-stopped
     environment:
-      - POSTGRES_USER=${postgres_username}
-      - POSTGRES_PASSWORD=${postgres_password}
-      - POSTGRES_DB=${postgres_db}
+      TZ: ${TZ:-Asia/Jakarta}
+      POSTGRES_DB: ${POSTGRES_DB:-frs}
+      POSTGRES_USER: ${POSTGRES_USER:-compreface}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?isi POSTGRES_PASSWORD di .env}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    # healthcheck: pg_isready (didefinisikan di image)
 
   compreface-admin:
-    restart: always
-    image: ${registry}compreface-admin:${ADMIN_VERSION}
-    container_name: "compreface-admin"
-    environment:
-      - POSTGRES_USER=${postgres_username}
-      - POSTGRES_PASSWORD=${postgres_password}
-      - POSTGRES_URL=jdbc:postgresql://${postgres_domain}:${postgres_port}/${postgres_db}
-      - SPRING_PROFILES_ACTIVE=dev
-      - ENABLE_EMAIL_SERVER=${enable_email_server}
-      - EMAIL_HOST=${email_host}
-      - EMAIL_USERNAME=${email_username}
-      - EMAIL_FROM=${email_from}
-      - EMAIL_PASSWORD=${email_password}
-      - ADMIN_JAVA_OPTS=${compreface_admin_java_options}
-      - MAX_FILE_SIZE=${max_file_size}
-      - MAX_REQUEST_SIZE=${max_request_size}B
+    image: ${REGISTRY:-}mega/compreface-admin:${ADMIN_VERSION:-1.2.0}
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
     depends_on:
-      - compreface-postgres-db
-      - compreface-api
+      compreface-postgres-db:
+        condition: service_healthy
+    environment:
+      <<: *java-common
+      ADMIN_JAVA_OPTS: ${ADMIN_JAVA_OPTS:--XX:MaxRAMPercentage=75.0}
+      SECURITY_SIGNINGKEY: ${SECURITY_SIGNINGKEY:?isi SECURITY_SIGNINGKEY di .env}
+      ENABLE_EMAIL_SERVER: ${ENABLE_EMAIL_SERVER:-false}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.example.internal}
+      EMAIL_FROM: ${EMAIL_FROM:-CompreFace <no-reply@example.internal>}
+      EMAIL_USERNAME: ${EMAIL_USERNAME:-}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-}
+      FRS_CRUD_HOST: ${FRS_CRUD_HOST:-http://localhost:8000}
+      MANAGEMENT_HEALTH_MAIL_ENABLED: "false"
+    mem_limit: ${ADMIN_MEM_LIMIT:-1536m}
 
   compreface-api:
-    restart: always
-    image: ${registry}compreface-api:${API_VERSION}
-    container_name: "compreface-api"
+    image: ${REGISTRY:-}mega/compreface-api:${API_VERSION:-1.2.0}
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      # "exec" wajib: ND4J/JavaCPP mengekstrak lalu memuat library native (OpenBLAS) di /tmp.
+      # tmpfs Docker default-nya noexec → "UnsatisfiedLinkError ... failed to map segment".
+      - /tmp:exec
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
     depends_on:
-      - compreface-postgres-db
+      compreface-postgres-db:
+        condition: service_healthy
+      # admin menjalankan migrasi Liquibase — pada DB kosong api harus menunggu admin.
+      compreface-admin:
+        condition: service_healthy
+      compreface-core:
+        condition: service_healthy
     environment:
-      - POSTGRES_USER=${postgres_username}
-      - POSTGRES_PASSWORD=${postgres_password}
-      - POSTGRES_URL=jdbc:postgresql://${postgres_domain}:${postgres_port}/${postgres_db}
-      - SPRING_PROFILES_ACTIVE=dev
-      - API_JAVA_OPTS=${compreface_api_java_options}
-      - SAVE_IMAGES_TO_DB=${save_images_to_db}
-      - MAX_FILE_SIZE=${max_file_size}
-      - MAX_REQUEST_SIZE=${max_request_size}B
-      - CONNECTION_TIMEOUT=${connection_timeout:-10000}
-      - READ_TIMEOUT=${read_timeout:-60000}
-
-  compreface-fe:
-    restart: always
-    image: ${registry}compreface-fe:${FE_VERSION}
-    container_name: "compreface-ui"
-    ports:
-      - "8000:80"
-    depends_on:
-      - compreface-api
-      - compreface-admin
-    environment:
-      - CLIENT_MAX_BODY_SIZE=${max_request_size}
-      - PROXY_READ_TIMEOUT=${read_timeout:-60000}ms
-      - PROXY_CONNECT_TIMEOUT=${connection_timeout:-10000}ms
+      <<: *java-common
+      API_JAVA_OPTS: ${API_JAVA_OPTS:--XX:MaxRAMPercentage=75.0}
+      CONNECTION_TIMEOUT: ${CONNECTION_TIMEOUT:-10000}
+      READ_TIMEOUT: ${READ_TIMEOUT:-60000}
+      MAX_ATTEMPTS: ${MAX_ATTEMPTS:-1}
+    mem_limit: ${API_MEM_LIMIT:-3g}
 
   compreface-core:
-    restart: always
-    image: ${registry}compreface-core:${CORE_VERSION}
-    container_name: "compreface-core"
+    image: ${REGISTRY:-}mega/compreface-core:${CORE_VERSION:-1.2.0}
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
     environment:
-      - ML_PORT=3000
-      - IMG_LENGTH_LIMIT=${max_detect_size}
-      - UWSGI_PROCESSES=${uwsgi_processes:-2}
-      - UWSGI_THREADS=${uwsgi_threads:-1}
-    healthcheck:
-      test: curl --fail http://localhost:3000/healthcheck || exit 1
-      interval: 10s
-      retries: 0
-      start_period: 0s
-      timeout: 1s
+      TZ: ${TZ:-Asia/Jakarta}
+      ML_PORT: 3000
+      IMG_LENGTH_LIMIT: ${IMG_LENGTH_LIMIT:-640}
+      UWSGI_PROCESSES: ${UWSGI_PROCESSES:-2}
+      UWSGI_THREADS: ${UWSGI_THREADS:-1}
+      UWSGI_MAX_WORKER_LIFETIME: ${UWSGI_MAX_WORKER_LIFETIME:-93600}
+      LOGGING_LEVEL_NAME: ${LOGGING_LEVEL_NAME:-info}
+    mem_limit: ${CORE_MEM_LIMIT:-6g}
+    # healthcheck: GET /healthcheck (didefinisikan di image, start_period 180 s)
+
+  compreface-fe:
+    image: ${REGISTRY:-}mega/compreface-fe:${FE_VERSION:-1.2.0}
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /etc/nginx/conf.d:mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    # Sengaja TANPA depends_on: fe harus tetap hidup walau admin/api belum siap (SPEC FR-07).
+    ports:
+      - "${FE_HTTP_PORT:-8000}:8080"
+    environment:
+      TZ: ${TZ:-Asia/Jakarta}
+      ADMIN_UPSTREAM: compreface-admin:8080
+      API_UPSTREAM: compreface-api:8080
+      CLIENT_MAX_BODY_SIZE: ${CLIENT_MAX_BODY_SIZE:-10M}
+      PROXY_READ_TIMEOUT: ${READ_TIMEOUT:-60000}ms
+      PROXY_CONNECT_TIMEOUT: ${CONNECTION_TIMEOUT:-10000}ms
