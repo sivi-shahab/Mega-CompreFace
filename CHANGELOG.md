@@ -17,6 +17,7 @@ Format mengikuti [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Fixed
+- fe: font Poppins & Material Icons di-self-host (`ui/src/assets/fonts/`, + `font/woff2` di `mime.types`). Sebelumnya UI memuat dari Google Fonts dan gagal di balik proxy SSL kantor (`ERR_CERT_AUTHORITY_INVALID`), sehingga font dan ikon tidak tampil benar.
 - fe: UI tertahan di layar loading karena `GET /core/status` jatuh ke index SPA (route `/core/` dihapus total). Kini `location = /core/status` (GET saja) diteruskan ke `CORE_UPSTREAM`; endpoint core lain tetap tertutup. NetworkPolicy fe→core :3000 ditambahkan. SPEC FR-08 dan TC-10 direvisi.
 
 ## [1.2.0-mega.1] - 2026-09-29
