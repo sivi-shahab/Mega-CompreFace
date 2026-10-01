@@ -34,7 +34,18 @@ server {
     location / {
         root /usr/share/nginx/html/;
         index index.html;
-        try_files $uri $uri/ /index.html =404;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # index.html (termasuk fallback SPA untuk path apa pun) tidak boleh di-cache browser.
+    # Tanpa ini browser memakai heuristic caching dari Last-Modified, sehingga respons
+    # fallback untuk URL API/status (mis. /core/status sebelum route-nya ada) dan
+    # index.html lama setelah deploy bisa dipakai ulang berjam-jam tanpa request ke server.
+    # Aset build ber-hash (*.js, *.css) tetap boleh di-cache.
+    location = /index.html {
+        root /usr/share/nginx/html/;
+        add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+        expires off;
     }
 
     location /admin/ {
