@@ -1,0 +1,110 @@
+# Aturan alert — dievaluasi Prometheus, dikirim ke Alertmanager untuk notifikasi (docs/MONITORING.md §6).
+groups:
+  - name: compreface-service
+    rules:
+      - alert: ServiceDown
+        expr: probe_success{job="health"} == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations:
+          summary: "{{ $labels.service }} tidak sehat"
+          description: "Health check {{ $labels.instance }} gagal selama > 2 menit."
+
+      - alert: ServiceSlowHealthcheck
+        expr: probe_duration_seconds{job="health"} > 2
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "Health check {{ $labels.service }} lambat"
+          description: "Durasi probe {{ $value | humanizeDuration }} (> 2 s) selama 5 menit."
+
+      - alert: AlertmanagerNotificationsFailing
+        expr: rate(alertmanager_notifications_failed_total[5m]) > 0
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "Alertmanager gagal mengirim notifikasi ({{ $labels.integration }})"
+          description: "Cek kanal {{ $labels.integration }}: docker compose logs alertmanager"
+
+      - alert: ScrapeTargetDown
+        expr: up{job!="health"} == 0
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: "Exporter {{ $labels.job }} tidak bisa di-scrape"
+          description: "Target {{ $labels.instance }} down > 2 menit."
+
+  - name: compreface-container
+    rules:
+      - alert: ContainerMemoryNearLimit
+        expr: |
+          container_memory_working_set_bytes{service=~"compreface-.+"}
+            / (container_spec_memory_limit_bytes{service=~"compreface-.+"} > 0) > 0.9
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $labels.service }} memakai > 90% memory limit"
+          description: "Working set {{ $value | humanizePercentage }} dari limit. Risiko OOMKilled."
+
+      - alert: ContainerRestarted
+        expr: changes(container_start_time_seconds{service=~"compreface-.+"}[15m]) > 0
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $labels.service }} restart dalam 15 menit terakhir"
+          description: "Periksa: docker compose logs {{ $labels.service }}"
+
+  - name: compreface-gpu
+    rules:
+      - alert: GpuMemoryHigh
+        expr: nvidia_smi_memory_used_bytes / nvidia_smi_memory_total_bytes > 0.9
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "VRAM GPU > 90%"
+          description: "VRAM terpakai {{ $value | humanizePercentage }}."
+
+      - alert: GpuExporterNoData
+        expr: absent(nvidia_smi_gpu_info)
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "Metrik GPU tidak tersedia"
+          description: "gpu-exporter tidak melaporkan GPU — cek driver/nvidia-container-toolkit."
+
+  - name: compreface-postgres
+    rules:
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: "postgres-exporter tidak bisa terhubung ke PostgreSQL"
+          description: "pg_up = 0 selama > 1 menit."
+
+      - alert: PostgresConnectionsHigh
+        expr: sum(pg_stat_activity_count) / scalar(pg_settings_max_connections) > 0.8
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "Koneksi PostgreSQL > 80% max_connections"
+          description: "Pemakaian {{ $value | humanizePercentage }}."
+
+  - name: host
+    rules:
+      - alert: HostDiskSpaceLow
+        expr: |
+          node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs"}
+            / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs"} < 0.10
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "Disk {{ $labels.mountpoint }} sisa < 10%"
+          description: "Sisa {{ $value | humanizePercentage }}."
+
+      - alert: HostMemoryLow
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.10
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "RAM host tersisa < 10%"
+          description: "Tersedia {{ $value | humanizePercentage }}."

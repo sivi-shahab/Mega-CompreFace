@@ -41,6 +41,7 @@ Dibuat di luar git (lihat [DEPLOYMENT §4](DEPLOYMENT.md#4-buat-secret)); contoh
 |---|---|---|---|---|
 | `ADMIN_UPSTREAM` | `host:port` Service admin | `compreface-admin:8080` | Ya | CM |
 | `API_UPSTREAM` | `host:port` Service api | `compreface-api:8080` | Ya | CM |
+| `CORE_UPSTREAM` | `host:port` Service core, hanya untuk `GET /core/status` (cek kesiapan core di UI) | `compreface-core:3000` | Ya | CM |
 | `NGINX_RESOLVER` | IP DNS untuk resolver nginx; kosong = otomatis dari `nameserver` pertama di `/etc/resolv.conf` | *(kosong)* | Opsional | CM |
 | `NGINX_RESOLVER_VALID` | TTL cache DNS nginx | `10s` | Opsional | CM |
 | `NGINX_UPSTREAM_AUTO_FQDN` | `true` = host tanpa titik dilengkapi domain `search` pertama (k8s). Diabaikan di DNS docker (127.0.0.11) | `true` | Opsional | CM |

@@ -81,6 +81,7 @@ dev/ custom-builds/        artefak build upstream lama (referensi; tidak dipakai
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Komponen, alur data & data biometrik, dependency & urutan startup |
 | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Semua env var, Secret, build args, sizing core |
 | [docs/RUNNING.md](docs/RUNNING.md) | Menjalankan stack docker compose (GPU SubCenter-ArcFace-r100), restore data, file model, rollback |
+| [docs/MONITORING.md](docs/MONITORING.md) | Monitoring compose: Prometheus + Grafana, exporter, dashboard, alert |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Build, transfer air-gapped, deploy per environment, verifikasi, rollback |
 | [docs/MIGRATION.md](docs/MIGRATION.md) | Migrasi compose → Kubernetes termasuk data Postgres, cutover, go/no-go, rollback |
 | [docs/RUNBOOK.md](docs/RUNBOOK.md) | Operasional harian, scaling, backup/restore, troubleshooting, eskalasi |

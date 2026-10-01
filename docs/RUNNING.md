@@ -12,7 +12,7 @@
 |---|---|---|---|
 | 1.0.0 | 2026-10-01 | Claude Code | Versi awal |
 
-Terkait: [CONFIGURATION](CONFIGURATION.md) · [RUNBOOK](RUNBOOK.md) · [MIGRATION](MIGRATION.md) · [ADR-002](adr/ADR-002-model-ml-baked-air-gapped.md) · [ADR-005](adr/ADR-005-varian-core.md)
+Terkait: [CONFIGURATION](CONFIGURATION.md) · [RUNBOOK](RUNBOOK.md) · [MIGRATION](MIGRATION.md) · [ADR-002](adr/ADR-002-model-ml-baked-air-gapped.md) · [ADR-005](adr/ADR-005-varian-core.md) · [MONITORING](MONITORING.md)
 
 Untuk Kubernetes lihat [DEPLOYMENT](DEPLOYMENT.md). Dokumen ini membahas docker compose di satu host.
 
@@ -35,6 +35,7 @@ File compose:
 | `docker-compose.yml` | Stack dasar (core CPU FaceNet) |
 | `docker-compose.gpu.yml` | Override core → `1.2.0-arcface-r100-gpu` + reservasi 1 GPU |
 | `docker-compose.legacy-ports.yml` | Opsional: menambah port `8502` untuk URL UI lama (tidak dipakai di host ini) |
+| `docker-compose.monitoring.yml` | Opsional: Prometheus + Grafana (:3000) + exporter — lihat [MONITORING](MONITORING.md) |
 
 ## 2. Prasyarat host
 

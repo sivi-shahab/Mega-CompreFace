@@ -42,7 +42,8 @@ qualify() {
 
 ADMIN_UPSTREAM="$(qualify "$ADMIN_UPSTREAM")"
 API_UPSTREAM="$(qualify "$API_UPSTREAM")"
-export NGINX_RESOLVER ADMIN_UPSTREAM API_UPSTREAM
+CORE_UPSTREAM="$(qualify "$CORE_UPSTREAM")"
+export NGINX_RESOLVER ADMIN_UPSTREAM API_UPSTREAM CORE_UPSTREAM
 
-echo "compreface-fe: resolver=${NGINX_RESOLVER} admin=${ADMIN_UPSTREAM} api=${API_UPSTREAM}"
+echo "compreface-fe: resolver=${NGINX_RESOLVER} admin=${ADMIN_UPSTREAM} api=${API_UPSTREAM} core=${CORE_UPSTREAM}"
 exec /docker-entrypoint.sh "$@"

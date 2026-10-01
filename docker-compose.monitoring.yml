@@ -1,0 +1,186 @@
+# Override monitoring: Prometheus + Grafana + exporter. Bergabung ke network project yang sama
+# sehingga bisa menjangkau service internal (admin/api/core/postgres) tanpa membuka port baru.
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml -f docker-compose.monitoring.yml up -d
+# (atau tambahkan :docker-compose.monitoring.yml ke COMPOSE_FILE di .env — lihat docs/MONITORING.md)
+#
+# Port host: Grafana ${GRAFANA_PORT:-3000} (semua interface), Prometheus hanya 127.0.0.1:${PROMETHEUS_PORT:-9090},
+# Alertmanager hanya 127.0.0.1:${ALERTMANAGER_PORT:-9093}.
+# Exporter tidak mem-publish port.
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  alertmanager-data:
+
+services:
+  prometheus:
+    image: ${MON_REGISTRY:-}prom/prometheus:${PROMETHEUS_VERSION:-v3.5.0}
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-15d}
+      - --storage.tsdb.retention.size=${PROMETHEUS_RETENTION_SIZE:-10GB}
+      - --web.enable-lifecycle
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
+    environment:
+      TZ: ${TZ:-Asia/Jakarta}
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    mem_limit: ${PROMETHEUS_MEM_LIMIT:-2g}
+
+  grafana:
+    image: ${MON_REGISTRY:-}grafana/grafana:${GRAFANA_VERSION:-12.1.1}
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      TZ: ${TZ:-Asia/Jakarta}
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?isi GRAFANA_ADMIN_PASSWORD di .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_SECURITY_COOKIE_SECURE: ${GRAFANA_COOKIE_SECURE:-false}
+      GF_SECURITY_DISABLE_GRAVATAR: "true"
+      # Host air-gapped/bank: jangan memanggil internet
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+      # Jangan unduh plugin bawaan (metricsdrilldown, lokiexplore, ...) dari grafana.com saat start
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/compreface-overview.json
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    mem_limit: ${GRAFANA_MEM_LIMIT:-512m}
+
+  # Notifikasi alert. Kanal (email / Teams / webhook) diatur lewat ALERT_* di .env — lihat docs/MONITORING.md §6
+  alertmanager:
+    image: ${MON_REGISTRY:-}prom/alertmanager:${ALERTMANAGER_VERSION:-v0.28.1}
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/etc/alertmanager/entrypoint.sh"]
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager:ro
+      - alertmanager-data:/alertmanager
+    tmpfs:
+      - /tmp:mode=0700,uid=65534,gid=65534
+    ports:
+      - "127.0.0.1:${ALERTMANAGER_PORT:-9093}:9093"
+    environment:
+      TZ: ${TZ:-Asia/Jakarta}
+      ALERTMANAGER_EXTERNAL_URL: ${ALERTMANAGER_EXTERNAL_URL:-http://localhost:9093}
+      ALERT_REPEAT_INTERVAL: ${ALERT_REPEAT_INTERVAL:-4h}
+      ALERT_CRITICAL_REPEAT_INTERVAL: ${ALERT_CRITICAL_REPEAT_INTERVAL:-1h}
+      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:-}
+      ALERT_EMAIL_FROM: ${ALERT_EMAIL_FROM:-}
+      ALERT_SMTP_SMARTHOST: ${ALERT_SMTP_SMARTHOST:-}
+      ALERT_SMTP_USERNAME: ${ALERT_SMTP_USERNAME:-}
+      ALERT_SMTP_PASSWORD: ${ALERT_SMTP_PASSWORD:-}
+      ALERT_SMTP_REQUIRE_TLS: ${ALERT_SMTP_REQUIRE_TLS:-true}
+      ALERT_MSTEAMS_WEBHOOK_URL: ${ALERT_MSTEAMS_WEBHOOK_URL:-}
+      ALERT_WEBHOOK_URL: ${ALERT_WEBHOOK_URL:-}
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    mem_limit: 128m
+
+  # Metrik per container (CPU, RAM vs limit, network, restart).
+  # Minimal v0.55: versi lama gagal membaca container di Docker 29 + containerd snapshotter.
+  cadvisor:
+    image: ${MON_REGISTRY:-}gcr.io/cadvisor/cadvisor:${CADVISOR_VERSION:-v0.55.1}
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=15s
+      - --store_container_labels=false
+      - --whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service
+      - --disable_metrics=advtcp,cpu_topology,cpuset,hugetlb,memory_numa,percpu,process,referenced_memory,resctrl,sched,tcp,udp
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    mem_limit: ${CADVISOR_MEM_LIMIT:-512m}
+
+  # Metrik host (CPU, RAM, disk /data, load)
+  node-exporter:
+    image: ${MON_REGISTRY:-}prom/node-exporter:${NODE_EXPORTER_VERSION:-v1.9.1}
+    restart: unless-stopped
+    pid: host
+    command:
+      - --path.rootfs=/host
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|run|sys|var/lib/docker/.+|var/lib/containerd/.+)($|/)
+    volumes:
+      - /:/host:ro,rslave
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    mem_limit: 128m
+
+  # Metrik GPU via nvidia-smi — dipilih karena berjalan di vGPU (L40S-24Q) tanpa modul DCGM host
+  gpu-exporter:
+    image: ${MON_REGISTRY:-}utkuozdemir/nvidia_gpu_exporter:${GPU_EXPORTER_VERSION:-1.3.2}
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, utility]
+    mem_limit: 128m
+
+  postgres-exporter:
+    image: ${MON_REGISTRY:-}quay.io/prometheuscommunity/postgres-exporter:${POSTGRES_EXPORTER_VERSION:-v0.17.1}
+    restart: unless-stopped
+    depends_on:
+      compreface-postgres-db:
+        condition: service_healthy
+    environment:
+      DATA_SOURCE_URI: compreface-postgres-db:5432/${POSTGRES_DB:-frs}?sslmode=disable
+      # Disarankan user khusus ber-role pg_monitor (lihat docs/MONITORING.md §4); default memakai user aplikasi
+      DATA_SOURCE_USER: ${POSTGRES_EXPORTER_USER:-${POSTGRES_USER:-compreface}}
+      DATA_SOURCE_PASS: ${POSTGRES_EXPORTER_PASSWORD:-${POSTGRES_PASSWORD:?isi POSTGRES_PASSWORD di .env}}
+      PG_EXPORTER_AUTO_DISCOVER_DATABASES: "false"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    mem_limit: 128m
+
+  # Probe health endpoint tiap service (admin/api belum mengekspos /actuator/prometheus)
+  blackbox-exporter:
+    image: ${MON_REGISTRY:-}prom/blackbox-exporter:${BLACKBOX_EXPORTER_VERSION:-v0.27.0}
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/blackbox/blackbox.yml
+    volumes:
+      - ./monitoring/blackbox:/etc/blackbox:ro
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    mem_limit: 64m

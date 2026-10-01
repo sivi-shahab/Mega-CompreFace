@@ -1,0 +1,22 @@
+# TC-10 (revisi FR-08) — 2026-10-01T11:23:01+07:00 — fe image sha256:c41c83bbea1f
+
+$ curl -s -w "[%{http_code}]" localhost:8000/core/status
+{"available_plugins":{"age":"insightface.AgeDetector","calculator":"insightface.Calculator@arcface-r100-msfdrop75","detector":"insightface.FaceDetector@retinaface_r50_v1","gender":"insightface.GenderDetector","landmarks":"insightface.LandmarksDetector","mask":"facemask.MaskDetector","pose":"insightface.PoseEstimator"},"build_version":"1.2.0","calculator_version":"insightface.Calculator@arcface-r100-msfdrop75","similarity_coefficients":[1.224676,6.322647217],"status":"OK"}
+[200]
+
+$ curl -s -o /dev/null -w "[%{http_code}]" -X POST localhost:8000/core/status
+[403]
+$ curl -s localhost:8000/core/healthcheck | head -c 40  (GET)
+<!--
+  ~ Copyright (c) 2020 the original
+$ curl -s localhost:8000/core/find_faces | head -c 40  (GET)
+<!--
+  ~ Copyright (c) 2020 the original
+$ curl -s localhost:8000/core/ | head -c 40  (GET)
+<!--
+  ~ Copyright (c) 2020 the original
+$ curl -s -o /dev/null -w "[%{http_code}]" -X POST localhost:8000/core/find_faces
+[405]
+
+# request non-healthcheck yang sampai ke core selama uji:
+      2 "method": "GET", "path": "/status"
