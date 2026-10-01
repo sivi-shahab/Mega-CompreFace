@@ -25,14 +25,14 @@ h1 {
 .actions {
   margin-top: 20px;
   .join--btn {
-    @include action-btns(120px, $white, $light-blue);
+    @include action-btns(120px, $on-primary, $light-blue);
     border: none;
   }
 
   .cancel--btn {
-    @include action-btns(120px, $light-blue, $white);
+    @include action-btns(120px, $primary-text, $white);
     background: $white;
-    color: $light-blue;
+    color: $primary-text;
     border: 2px solid $light-blue;
   }
 }

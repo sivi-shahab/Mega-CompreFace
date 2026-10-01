@@ -32,17 +32,19 @@ $medium-gray: #505050;
 $super-light-gray: rgba(34, 34, 34, 0.1); // border drag-n-drop
 $pale-gray: #979899; // plain text labels, plain texts, plain form borders
 $select-bg: #d9dee8;
-$primary: #0082ca; // general buttons, accent text labels
-$primary-lighter: #3cbced;
-$primary-light: #7cbee3; // accent borders,
+$primary: #ffca08; // kuning Bank Mega — fill tombol, border, indikator aktif (BUKAN warna teks di latar terang)
+$primary-lighter: #ffd84a;
+$primary-light: #ffe27a; // accent borders,
 $primary-phantom-light: #f5f8f9; // accent borders,
-$primary-active: rgba(0, 130, 202, 0.1); // active background of list
-$light-blue: #1a9bd9;
+$primary-active: rgba(255, 202, 8, 0.15); // active background of list
+$light-blue: #ffca08; // nama lama dipertahankan; kini kuning Bank Mega
+$on-primary: #231f20; // teks di atas kuning (kontras 10.6:1)
+$primary-text: #806400; // teks/link aksen di latar terang (emas tua, kontras ≥ 4.5:1)
 $lighter-blue: #eef1f5;
-$dark-blue: #04234d; // labels
-$md-blue: #414b59;
-$pale-blue: #8c97a7;
-$breadcrumbs-blue: #748295;
+$dark-blue: #231f20; // labels (netral, selaras palet Bank Mega)
+$md-blue: #4a4a4a;
+$pale-blue: #8f8f8f;
+$breadcrumbs-blue: #757575;
 $secondary: #39404a;
 $orange: #ff8a00; // labels
 $purple: #8f38d3; // labels
@@ -51,6 +53,6 @@ $hovered: #fafafa;
 $special-light-gray: rgba(78, 78, 78, 0.05); //scrollbar Track
 $special-gray: rgba(229, 229, 229, 1); // scrollbar Handle
 $special-dark-gray: rgb(173, 173, 173); // scrollbar Handle on
-$special-light-blue: rgba(0, 130, 202, 0.02); // drag-n-drop hover
-$special-blue: rgba(0, 130, 202, 0.5); // drag-n-drop border hover
+$special-light-blue: rgba(255, 202, 8, 0.04); // drag-n-drop hover
+$special-blue: rgba(255, 202, 8, 0.7); // drag-n-drop border hover
 $light-gray-special: #f1f1f1; // border bottom color

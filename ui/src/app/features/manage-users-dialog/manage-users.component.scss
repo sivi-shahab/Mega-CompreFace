@@ -55,7 +55,7 @@ $select-width: 170px;
 
       .title {
         margin: 1rem 0 0.5rem 0;
-        color: $light-blue;
+        color: $primary-text;
         font-weight: 600;
         font-size: $text-md;
       }
@@ -179,9 +179,9 @@ $select-width: 170px;
   }
   .action-btns {
     .cancel--btn {
-      @include action-btns(126px, $light-blue, $white);
+      @include action-btns(126px, $primary-text, $white);
       background: $white;
-      color: $light-blue;
+      color: $primary-text;
       border: 2px solid $light-blue;
     }
   }

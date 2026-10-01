@@ -117,7 +117,7 @@ $hint-color: #a3afbc;
 }
 
 @mixin submit-btn {
-  color: $white;
+  color: $on-primary;
   background: $light-blue;
   font-weight: bold;
   border-radius: 15px;

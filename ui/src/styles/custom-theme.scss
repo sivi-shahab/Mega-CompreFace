@@ -44,11 +44,11 @@ $typography: mat-typography-config(
 $primary_palette: (
   Main: $primary,
   Light: $primary,
-  Dark: #28002f,
+  Dark: #c79a00,
   contrast: (
-    Main: #f5f5f5,
-    Light: #000,
-    Dark: #fff,
+    Main: $on-primary,
+    Light: $on-primary,
+    Dark: $on-primary,
   ),
 );
 $accent_palette: (
@@ -92,7 +92,7 @@ $custom-theme: mat-light-theme($custom-theme-primary, $custom-theme-accent, $cus
   }
 
   a {
-    color: $primary;
+    color: $primary-text;
     text-decoration: none;
   }
 

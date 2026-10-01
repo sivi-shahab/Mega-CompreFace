@@ -27,10 +27,10 @@
 }
 
 .confirm-btn {
-  @include action-btns(100px, $white, $light-blue);
+  @include action-btns(100px, $on-primary, $light-blue);
 }
 
 .cancel-btn {
-  @include action-btns(100px, $light-blue, $white);
+  @include action-btns(100px, $primary-text, $white);
   border: 2px solid $light-blue;
 }

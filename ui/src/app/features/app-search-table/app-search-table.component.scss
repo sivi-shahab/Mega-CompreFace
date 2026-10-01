@@ -97,7 +97,7 @@
     }
 
     button {
-      @include action-btns(193px, $white, $light-blue);
+      @include action-btns(193px, $on-primary, $light-blue);
       border: none;
 
       span {
