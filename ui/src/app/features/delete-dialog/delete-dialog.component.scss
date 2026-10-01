@@ -36,11 +36,11 @@
     justify-content: space-between;
 
     .delete-btn {
-      @include action-btns(170px, $white, $light-blue);
+      @include action-btns(170px, $on-primary, $light-blue);
     }
 
     .cancel-btn {
-      @include action-btns(149px, $light-blue, $white);
+      @include action-btns(149px, $primary-text, $white);
       border: 2px solid $light-blue;
     }
   }

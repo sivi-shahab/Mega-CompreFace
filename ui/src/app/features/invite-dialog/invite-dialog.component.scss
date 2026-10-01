@@ -41,15 +41,15 @@
   .add {
     display: inline-block;
     @include submit-btn;
-    @include action-btns(184px, $white, $light-blue);
+    @include action-btns(184px, $on-primary, $light-blue);
     border: none;
   }
 
   .cancel {
     @include submit-btn;
-    @include action-btns(126px, $light-blue, $white);
+    @include action-btns(126px, $primary-text, $white);
     background: $white;
-    color: $light-blue;
+    color: $primary-text;
     border: 2px solid $light-blue;
   }
 }

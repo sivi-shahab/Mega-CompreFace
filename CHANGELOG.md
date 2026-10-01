@@ -17,6 +17,7 @@ Format mengikuti [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- fe: palet biru diganti kuning Bank Mega `#FFCA08` (`styles/colors.scss`, palet Material). Teks di atas kuning memakai `$on-primary` `#231F20` (kontras 10.6:1); teks/link aksen di latar terang memakai `$primary-text` `#806400` (≥ 4.5:1). Wordmark logo bergradasi kuning→oranye `#F37022`; ikon aksen oranye; ikon/judul navy jadi netral `#231F20`; favicon dan logo mobile direkolor.
 - fe: branding Exadel diganti Bank Mega. `face-recognition-logo.svg` (toolbar, login, sign-up, password recovery, server status) kini logo Bank Mega (dari bankmega.com) + wordmark "CompreFace" asli; `face-recognition-logo-mobile-login.svg` versi vertikal; `logo.png`/`logo_blue.png` (logo Exadel, tidak dipakai) dihapus; judul tab dan alt text logo jadi "Bank Mega CompreFace".
 
 ### Fixed
