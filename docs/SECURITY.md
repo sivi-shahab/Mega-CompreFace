@@ -68,6 +68,7 @@ Hasilnya: core dan DB tidak bisa dijangkau dari luar namespace, dan **tidak ada 
 ## 5. Telemetry & transfer data ke pihak ketiga
 
 - Upstream mengirim statistik penggunaan ke `api.appery.io` bila `APPERY_API_KEY` terisi. Image resmi `exadel/compreface-admin:1.2.0` membawa key tersebut. **Image mega tidak membawa key** (FR-13), manifest tidak meng-set-nya, dan egress internet diblok NetworkPolicy.
+- UI (browser): font Poppins dan Material Icons di-self-host di image fe (`ui/src/assets/fonts/`). Browser pengguna tidak lagi memanggil `fonts.googleapis.com`/`fonts.gstatic.com` — sebelumnya gagal (`ERR_CERT_AUTHORITY_INVALID`) di balik proxy SSL kantor dan membocorkan IP/user-agent pengguna ke Google.
 - Core: runtime tanpa koneksi keluar (terverifikasi dengan `--network none`). Model sudah ada di image ([ADR-002](adr/ADR-002-model-ml-baked-air-gapped.md)).
 - Tidak ada transfer data pribadi ke luar infrastruktur bank; data dan pemrosesan tetap on-prem di Indonesia.
 - Deployment yang masih memakai image upstream `exadel/compreface-admin` harus mengosongkan `APPERY_API_KEY` (env) dan membatasi egress host. Temuan terkait sistem berjalan dicatat di catatan internal.
