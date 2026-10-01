@@ -20,7 +20,7 @@ Untuk Kubernetes lihat [DEPLOYMENT](DEPLOYMENT.md). Dokumen ini membahas docker 
 
 | Service compose | Image | Port | Keterangan |
 |---|---|---|---|
-| `compreface-fe` | `mega/compreface-fe:1.2.0` | host `8000`, `8502` → 8080 | UI + reverse proxy `/api/v1/` → api, `/admin/` → admin |
+| `compreface-fe` | `mega/compreface-fe:1.2.0` | host `8000` → 8080 | UI + reverse proxy `/api/v1/` → api, `/admin/` → admin |
 | `compreface-admin` | `mega/compreface-admin:1.2.0` | internal 8080 | Menjalankan migrasi Liquibase |
 | `compreface-api` | `mega/compreface-api:1.2.0` | internal 8080 | REST API recognition/detection/verification |
 | `compreface-core` | `mega/compreface-core:1.2.0-arcface-r100-gpu` | internal 3000 | Model **SubCenter-ArcFace r100** (`insightface.Calculator@arcface-r100-msfdrop75`) + RetinaFace r50, 1 GPU NVIDIA |
@@ -34,7 +34,7 @@ File compose:
 |---|---|
 | `docker-compose.yml` | Stack dasar (core CPU FaceNet) |
 | `docker-compose.gpu.yml` | Override core → `1.2.0-arcface-r100-gpu` + reservasi 1 GPU |
-| `docker-compose.legacy-ports.yml` | Menambah port `8502` agar URL UI lama tetap berlaku |
+| `docker-compose.legacy-ports.yml` | Opsional: menambah port `8502` untuk URL UI lama (tidak dipakai di host ini) |
 
 ## 2. Prasyarat host
 
@@ -51,8 +51,9 @@ cp .env.example .env && chmod 600 .env
 # isi secret WAJIB
 sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=$(openssl rand -base64 24 | tr -d '/+=')|" .env
 sed -i "s|^SECURITY_SIGNINGKEY=.*|SECURITY_SIGNINGKEY=$(openssl rand -hex 32)|" .env
-# pakai varian GPU + port lama secara default (tanpa perlu -f di setiap perintah)
-echo 'COMPOSE_FILE=docker-compose.yml:docker-compose.gpu.yml:docker-compose.legacy-ports.yml' >> .env
+# pakai varian GPU secara default (tanpa perlu -f di setiap perintah); fe hanya expose :8000
+echo 'COMPOSE_FILE=docker-compose.yml:docker-compose.gpu.yml' >> .env
+# bila URL UI lama :8502 masih dibutuhkan, tambahkan :docker-compose.legacy-ports.yml
 ```
 
 Nilai yang biasanya disesuaikan:
@@ -60,7 +61,7 @@ Nilai yang biasanya disesuaikan:
 | Variabel | Nilai host ini | Keterangan |
 |---|---|---|
 | `FE_HTTP_PORT` | `8000` | Port utama (UI + API) |
-| `FE_LEGACY_UI_PORT` | `8502` (default) | Port UI lama, dari `docker-compose.legacy-ports.yml` |
+| `FE_LEGACY_UI_PORT` | — (tidak dipakai) | Port UI lama, hanya bila `docker-compose.legacy-ports.yml` diaktifkan |
 | `API_MEM_LIMIT` | `8g` | Heap = 75% dari limit. Cache embedding 88 rb wajah butuh heap besar |
 | `CONNECTION_TIMEOUT` / `READ_TIMEOUT` | `600000` | ms, sama dengan stack lama |
 | `CORE_GPU_MEM_LIMIT` | `12g` | |
