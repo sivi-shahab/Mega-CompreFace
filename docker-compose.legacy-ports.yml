@@ -1,0 +1,10 @@
+# Override port host — kompatibel dengan stack compose lama (custom-builds/SubCenter-ArcFace-r100-gpu):
+#   :8000 → dulu api langsung; sekarang fe, yang mem-proxy /api/v1/ ke api (path API sama)
+#   :8502 → UI
+# fe sudah mem-publish ${FE_HTTP_PORT:-8000}; file ini menambah 8502.
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml -f docker-compose.legacy-ports.yml up -d
+# (atau set COMPOSE_FILE di .env — lihat docs/RUNNING.md)
+services:
+  compreface-fe:
+    ports:
+      - "${FE_LEGACY_UI_PORT:-8502}:8080"

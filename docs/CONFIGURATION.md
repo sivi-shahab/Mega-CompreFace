@@ -172,6 +172,7 @@ Varian lain di `build-args.env`: `arcface-r100` (CPU), `facenet`, `mobilenet`, `
 | `FE_VERSION`, `ADMIN_VERSION`, `API_VERSION`, `CORE_VERSION`, `POSTGRES_VERSION` | compose, build.sh | `1.2.0` | Tag image per service |
 | `CORE_GPU_VERSION` | `docker-compose.gpu.yml` | `1.2.0-arcface-r100-gpu` | |
 | `FE_HTTP_PORT` | compose | `8000` | Port host → fe:8080 |
+| `FE_LEGACY_UI_PORT` | compose (`docker-compose.legacy-ports.yml`) | `8502` | Port host tambahan → fe:8080, kompatibel dengan URL UI stack lama |
 | `ADMIN_MEM_LIMIT`, `API_MEM_LIMIT`, `CORE_MEM_LIMIT`, `CORE_GPU_MEM_LIMIT` | compose | `1536m`, `3g`, `6g`, `12g` | Batas memori container |
 | `IMAGE_NAMESPACE`, `DOCKER_BUILD_ARGS` | build.sh, push.sh | `mega`, – | |
 | `E2E_EMAIL`, `E2E_PASSWORD`, `LATENCY_N`, `CLEANUP` | e2e-test.sh | – | Lihat header skrip |
