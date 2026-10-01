@@ -16,6 +16,9 @@ Format mengikuti [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- fe: branding Exadel diganti Bank Mega. `face-recognition-logo.svg` (toolbar, login, sign-up, password recovery, server status) kini logo Bank Mega (dari bankmega.com) + wordmark "CompreFace" asli; `face-recognition-logo-mobile-login.svg` versi vertikal; `logo.png`/`logo_blue.png` (logo Exadel, tidak dipakai) dihapus; judul tab dan alt text logo jadi "Bank Mega CompreFace".
+
 ### Fixed
 - fe: `index.html` dan fallback SPA dikirim dengan `Cache-Control: no-cache, no-store, must-revalidate` (`try_files` tanpa `=404` agar fallback melewati `location = /index.html`). Sebelumnya browser meng-cache fallback secara heuristik (Last-Modified tanpa Cache-Control), sehingga `/core/status` yang dulu dibalas index SPA tetap dibaca dari cache dan UI tertahan di "Core node loading" walau route sudah diperbaiki.
 - fe: font Poppins & Material Icons di-self-host (`ui/src/assets/fonts/`, + `font/woff2` di `mime.types`). Sebelumnya UI memuat dari Google Fonts dan gagal di balik proxy SSL kantor (`ERR_CERT_AUTHORITY_INVALID`), sehingga font dan ikon tidak tampil benar.
