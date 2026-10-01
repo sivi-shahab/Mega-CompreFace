@@ -121,9 +121,9 @@ Temuan Discovery yang melatarbelakangi pekerjaan ini:
 | FR-03 | Nama image mengikuti `${REGISTRY}/mega/compreface-<service>:<version>`. Setiap image diberi label OCI (`org.opencontainers.image.version`, `.revision` = git SHA, `.source`, `.licenses=Apache-2.0`). |
 | FR-04 | Pilihan plugin/model dan varian CPU/GPU core didefinisikan sebagai build args di `services/compreface-core/build-args.env`. Default = image resmi 1.2.0 (FaceNet, CPU) dengan tag `1.2.0`. Varian `arcface-r100-gpu` dengan tag `1.2.0-arcface-r100-gpu` (sama dengan model data produksi). |
 | FR-05 | Semua model ML dan dependency pip plugin di-bake ke image core saat build. Saat runtime core tidak melakukan koneksi keluar apa pun. |
-| FR-06 | Semua hostname/URL antar-service berasal dari env var: `ADMIN_UPSTREAM`, `API_UPSTREAM` (fe), `PYTHON_URL` (admin, api), `POSTGRES_URL` (admin, api). Tidak ada hostname hardcoded di image yang tidak bisa di-override. |
+| FR-06 | Semua hostname/URL antar-service berasal dari env var: `ADMIN_UPSTREAM`, `API_UPSTREAM`, `CORE_UPSTREAM` (fe), `PYTHON_URL` (admin, api), `POSTGRES_URL` (admin, api). Tidak ada hostname hardcoded di image yang tidak bisa di-override. |
 | FR-07 | FE nginx memakai `nginx.conf.template` (envsubst) dan direktif `resolver` (otomatis dari `/etc/resolv.conf` atau env `NGINX_RESOLVER`) dengan `proxy_pass` berbasis variabel. nginx tetap start dan melayani static UI walaupun admin/api belum siap (mengembalikan 502, tidak crash). |
-| FR-08 | Route `/core/` dihapus dari FE. Core hanya bisa diakses dari api/admin di dalam cluster. |
+| FR-08 | Route `/core/` dihapus dari FE. Core hanya bisa diakses dari api/admin di dalam cluster, **kecuali** `GET /core/status` (exact match, read-only) yang wajib ada karena UI menahan halaman sampai status core `OK` dan membaca `available_plugins` darinya (revisi 2026-10-01). |
 | FR-09 | `k8s/base` berisi, per service, Deployment (fe, admin, api, core) atau StatefulSet + PVC (postgres), Service ClusterIP, ConfigMap, dan NetworkPolicy. Credential diambil dari Secret; tersedia `secret.example.yaml` tanpa nilai asli. |
 | FR-10 | Setiap workload memiliki probe sesuai endpoint: fe `GET /` (atau `/healthz`); admin & api `GET /actuator/health/{liveness,readiness}` di management port; core `startupProbe` toleransi panjang, lalu `readiness`/`liveness` `GET /healthcheck`; postgres `pg_isready`. |
 | FR-11 | `k8s/overlays/dev` dan `k8s/overlays/prod` (kustomize) mengatur image tag, replicas, resources, dan varian core. Prod memiliki patch resource core terpisah (terbesar), `UWSGI_PROCESSES` selaras dengan CPU/GPU limit, dan contoh HPA core (dikomentari/opsional). |
@@ -175,7 +175,8 @@ Catatan: management port 8081 dipilih karena `/actuator/**` di api diblokir oleh
 | `/` | Angular SPA |
 | `/admin/**` | admin |
 | `/api/v1/**` | api (autentikasi `x-api-key`) |
-| `/core/**` | **dihapus** |
+| `/core/status` | core `GET /status` saja (exact match; method lain 403) |
+| `/core/**` lainnya | **dihapus** |
 
 ### 7.3 Env var antar-service (ringkas; detail di CONFIGURATION.md)
 
@@ -183,6 +184,7 @@ Catatan: management port 8081 dipilih karena `/actuator/**` di api diblokir oleh
 |---|---|---|---|
 | fe | `ADMIN_UPSTREAM` | `compreface-admin:8080` (k8s: FQDN `compreface-admin.<ns>.svc.cluster.local:8080`) | ConfigMap |
 | fe | `API_UPSTREAM` | `compreface-api:8080` (k8s: FQDN) | ConfigMap |
+| fe | `CORE_UPSTREAM` | `compreface-core:3000` (k8s: FQDN) — hanya untuk `GET /core/status` | ConfigMap |
 | fe | `NGINX_RESOLVER` | otomatis dari `/etc/resolv.conf` | ConfigMap (opsional) |
 | fe | `CLIENT_MAX_BODY_SIZE`, `PROXY_READ_TIMEOUT`, `PROXY_CONNECT_TIMEOUT` | `10M`, `60000ms`, `10000ms` | ConfigMap |
 | admin, api | `POSTGRES_URL` | `jdbc:postgresql://compreface-postgres-db:5432/frs` | ConfigMap |
@@ -284,7 +286,7 @@ Catatan: dokumentasi upstream dipindah (`git mv`, isi tidak diubah selain link r
 | FR-05 / NFR-09 | `docker run --network none mega/compreface-core:<tag>` mencapai `GET /healthcheck` = 200 dan `POST /find_faces` dengan sample image mengembalikan ≥1 wajah (diuji via `docker exec`). |
 | FR-06 | `grep` tidak menemukan hostname service hardcoded di `services/compreface-fe/nginx.conf.template`. Mengubah `API_UPSTREAM` di compose mengubah target proxy (diverifikasi di config ter-render). |
 | FR-07 / NFR-02 | Container fe dijalankan sendirian (tanpa admin/api/core): status Up/healthy ≥ 60 s, `GET /` = 200, `GET /api/v1/...` = 502, restart count = 0. |
-| FR-08 | `GET /core/status` via fe ≠ 200 (mengembalikan SPA index atau 404, bukan respons core). |
+| FR-08 | `GET /core/status` via fe = 200 dengan JSON core (`status: OK`); `POST /core/status` = 403; path core lain (`/core/healthcheck`, `/core/find_faces`, …) bukan respons core (SPA index/405) dan tidak tercatat di log core. |
 | FR-09 | `kubectl kustomize k8s/overlays/{dev,prod}` sukses. Output memuat 4 Deployment, 1 StatefulSet dengan `volumeClaimTemplates`, 5 Service, ConfigMap, NetworkPolicy (default-deny + allow). Tidak ada Secret dengan nilai asli di repo. `kubeconform -strict` lulus bila tersedia. |
 | FR-10 | Setiap container di output kustomize memiliki `readinessProbe` dan `livenessProbe`. Core memiliki `startupProbe` dengan `failureThreshold × periodSeconds ≥ 600`. |
 | FR-11 | Overlay prod: core memakai tag `1.2.0-arcface-r100-gpu`, requests/limits core paling besar di antara semua service, `nvidia.com/gpu: 1`, dan manifest HPA contoh (dikomentari di `kustomization.yaml`). `UWSGI_PROCESSES` di ConfigMap prod konsisten dengan tabel sizing di CONFIGURATION.md. |

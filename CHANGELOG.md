@@ -16,6 +16,9 @@ Format mengikuti [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+- fe: UI tertahan di layar loading karena `GET /core/status` jatuh ke index SPA (route `/core/` dihapus total). Kini `location = /core/status` (GET saja) diteruskan ke `CORE_UPSTREAM`; endpoint core lain tetap tertutup. NetworkPolicy fe→core :3000 ditambahkan. SPEC FR-08 dan TC-10 direvisi.
+
 ## [1.2.0-mega.1] - 2026-09-29
 
 Rilis awal repackaging dari upstream `exadel-inc/CompreFace` 1.2.0 (commit `ddf32da82`).

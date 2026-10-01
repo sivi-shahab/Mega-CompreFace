@@ -42,6 +42,7 @@ USER 101
 # Default non-rahasia; override lewat env / ConfigMap.
 ENV ADMIN_UPSTREAM=compreface-admin:8080 \
     API_UPSTREAM=compreface-api:8080 \
+    CORE_UPSTREAM=compreface-core:3000 \
     NGINX_RESOLVER="" \
     NGINX_RESOLVER_VALID=10s \
     NGINX_UPSTREAM_AUTO_FQDN=true \

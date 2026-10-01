@@ -52,7 +52,7 @@ Referensi: [SPEC](../SPEC.md) §4 & §7, [ADR](adr/README.md), arsitektur upstre
               └──────────────────────────────────────────────────────────┘
 ```
 
-Semua Service bertipe **ClusterIP**. Hanya fe yang dapat dijangkau dari luar namespace (melalui ingress). Route `/core/` upstream **dihapus** ([ADR-004](adr/ADR-004-nginx-envsubst-resolver.md)).
+Semua Service bertipe **ClusterIP**. Hanya fe yang dapat dijangkau dari luar namespace (melalui ingress). Route `/core/` upstream **dihapus**, kecuali `GET /core/status` yang dibutuhkan UI ([ADR-004](adr/ADR-004-nginx-envsubst-resolver.md)).
 
 ## 2. Tanggung jawab service
 

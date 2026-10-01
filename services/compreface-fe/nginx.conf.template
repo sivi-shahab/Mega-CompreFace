@@ -5,8 +5,11 @@
 #  1. Tidak ada blok "upstream" statis. Host di-resolve saat request lewat "resolver" +
 #     proxy_pass berbasis variabel, sehingga nginx tidak crash ("host not found in upstream")
 #     bila admin/api belum ada, dan IP baru di-refresh tiap ${NGINX_RESOLVER_VALID}.
-#  2. Hostname upstream dari env: ${ADMIN_UPSTREAM}, ${API_UPSTREAM}.
+#  2. Hostname upstream dari env: ${ADMIN_UPSTREAM}, ${API_UPSTREAM}, ${CORE_UPSTREAM}.
 #  3. Route /core/ DIHAPUS — core hanya boleh diakses api/admin di dalam cluster.
+#     Pengecualian: GET /core/status (exact match). UI menahan seluruh halaman sampai
+#     endpoint ini mengembalikan status "OK" (app.component + servers-status effects) dan
+#     memakai available_plugins-nya. Isinya hanya status + nama model, tanpa data wajah.
 #  4. Listen 8080 (non-root) + endpoint /healthz untuk probe.
 
 resolver ${NGINX_RESOLVER} valid=${NGINX_RESOLVER_VALID} ipv6=off;
@@ -18,6 +21,7 @@ server {
 
     set $admin_upstream ${ADMIN_UPSTREAM};
     set $api_upstream ${API_UPSTREAM};
+    set $core_upstream ${CORE_UPSTREAM};
 
     client_max_body_size ${CLIENT_MAX_BODY_SIZE};
 
@@ -62,6 +66,16 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_pass http://$api_upstream;
+    }
+
+    # Satu-satunya endpoint core yang terbuka lewat fe (lihat catatan 3 di atas).
+    location = /core/status {
+        limit_except GET {
+            deny all;
+        }
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 10s;
+        proxy_pass http://$core_upstream/status;
     }
 
     # Swagger UI admin & api (upstream: /(api|admin)/swagger-ui.html → /swagger-ui.html pada service).

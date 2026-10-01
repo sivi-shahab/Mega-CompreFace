@@ -60,10 +60,10 @@ Alur data rinci: [ARCHITECTURE §4](ARCHITECTURE.md#4-alur-data-biometrik-uu-pdp
 | `compreface-fe` | dari namespace ingress controller → :8080 | → admin, api :8080 |
 | `compreface-admin` | dari fe → :8080 | → postgres :5432, core :3000 (SMTP: dikomentari, aktifkan bila perlu) |
 | `compreface-api` | dari fe → :8080 | → postgres :5432, core :3000 |
-| `compreface-core` | dari api, admin → :3000 | **tidak ada** (air-gapped) |
+| `compreface-core` | dari api, admin, fe (hanya `/status`) → :3000 | **tidak ada** (air-gapped) |
 | `compreface-postgres-db` | dari admin, api → :5432 | tidak ada |
 
-Hasilnya: core dan DB tidak bisa dijangkau dari luar namespace, dan **tidak ada egress internet** dari pod mana pun. Route `/core/` (akses core tanpa autentikasi via UI) **dihapus** dari fe.
+Hasilnya: core dan DB tidak bisa dijangkau dari luar namespace, dan **tidak ada egress internet** dari pod mana pun. Route `/core/` (akses core tanpa autentikasi via UI) **dihapus** dari fe, kecuali `GET /core/status` (exact match, method lain 403). UI membutuhkannya untuk cek kesiapan core; isinya hanya status, nama model/plugin, dan versi build — tanpa data wajah. Karena itu NetworkPolicy core mengizinkan ingress dari fe di :3000; pembatasan path ada di nginx fe.
 
 ## 5. Telemetry & transfer data ke pihak ketiga
 

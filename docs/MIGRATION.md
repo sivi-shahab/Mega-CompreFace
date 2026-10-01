@@ -43,7 +43,7 @@ Perbedaan yang memengaruhi migrasi:
 |---|---|---|---|
 | `PGDATA` | `/var/lib/postgresql/data` | `/var/lib/postgresql/data/pgdata` | Volume lama **tidak bisa** dipasang langsung, harus lewat dump/restore |
 | User DB | superuser default | dari Secret (mis. `compreface`, superuser pada DB baru) | Restore dengan `--no-owner --role` |
-| Route `/core/` via UI | ada (image fe upstream) | dihapus | Klien yang memanggil `/core/` harus pindah ke api |
+| Route `/core/` via UI | ada (image fe upstream) | dihapus, kecuali `GET /core/status` (dipakai UI) | Klien yang memanggil endpoint `/core/` lain harus pindah ke api |
 | api expose langsung (bypass UI) | ya | tidak (lewat fe/ingress) | Ubah base URL klien |
 
 ## 3. Persiapan (H-7 s.d. H-1)
